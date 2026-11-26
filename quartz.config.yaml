@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./quartz/plugins/quartz-plugins.schema.json
 configuration:
-  pageTitle: 로보틱스 학습 기록
+  pageTitle: P-digit 개발 기록
   pageTitleSuffix: ""
   enableSPA: true
   enablePopovers: true
