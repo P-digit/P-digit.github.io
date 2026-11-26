@@ -1,0 +1,94 @@
+name: 노션 동기화 → Quartz 배포
+
+on:
+  # 코드나 글을 직접 push 했을 때
+  push:
+    branches: [main]
+  # 3시간마다 노션에서 새 공개 글을 가져온다 (UTC 기준 cron)
+  schedule:
+    - cron: "17 */3 * * *"
+  # Actions 탭에서 "Run workflow"로 바로 실행
+  workflow_dispatch:
+
+permissions:
+  contents: write # 동기화한 글을 저장소에 커밋
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0 # Quartz가 git 기록으로 수정일을 계산한다
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+
+      - name: npm 캐시
+        uses: actions/cache@v5
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Quartz 플러그인 캐시
+        uses: actions/cache@v5
+        with:
+          path: .quartz/plugins
+          key: ${{ runner.os }}-plugins-${{ hashFiles('quartz.lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-plugins-
+
+      - run: npm ci
+
+      - name: Quartz 플러그인 설치
+        run: npx quartz plugin install
+
+      - name: 노션에서 공개 글 가져오기
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
+        run: |
+          if [ -z "$NOTION_TOKEN" ] || [ -z "$NOTION_DATABASE_ID" ]; then
+            echo "::warning::NOTION_TOKEN / NOTION_DATABASE_ID 시크릿이 없어 노션 동기화를 건너뜁니다."
+          else
+            node scripts/notion-sync.mjs
+          fi
+
+      - name: 바뀐 글 커밋
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add content
+          if [ -d .notion-sync ]; then git add .notion-sync; fi
+          if git diff --cached --quiet; then
+            echo "바뀐 글 없음"
+          else
+            git commit -m "노션 동기화: $(date -u +'%Y-%m-%d %H:%M') UTC"
+            git push
+          fi
+
+      - name: Quartz 빌드
+        run: npx quartz build
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
