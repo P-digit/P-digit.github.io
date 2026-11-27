@@ -216,7 +216,9 @@ const motionScript = `
       el.className = "back-to-top"
       el.setAttribute("aria-label", "맨 위로")
       el.title = "맨 위로"
-      el.textContent = "↑"
+      // 글자 "↑" 는 글꼴마다 위치가 달라 SVG 화살표로 (이슈 27)
+      el.innerHTML =
+        '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg>'
       el.addEventListener("click", () =>
         window.scrollTo({ top: 0, behavior: reduce() ? "instant" : "smooth" }),
       )

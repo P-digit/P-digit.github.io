@@ -1027,6 +1027,25 @@ $ease-out: cubic-bezier(0.22, 1, 0.36, 1);
     color: var(--secondary);
   }
 
+  // SVG 화살표: 버튼 정중앙, hover 때 위로 살짝 (이슈 27)
+  svg {
+    display: block;
+    width: 1.1rem;
+    height: 1.1rem;
+    transition: transform 0.2s $ease-out;
+  }
+
+  &:hover svg,
+  &:focus-visible svg {
+    transform: translateY(-2px);
+  }
+
+  // 누를 때 살짝 눌림
+  &[data-visible]:active {
+    transform: scale(0.94);
+    transition-duration: 0.08s;
+  }
+
   &[hidden] {
     display: none;
   }
@@ -1039,6 +1058,14 @@ $ease-out: cubic-bezier(0.22, 1, 0.36, 1);
   @media (prefers-reduced-motion: reduce) {
     transform: none;
     transition: none;
+
+    svg,
+    &:hover svg,
+    &:focus-visible svg,
+    &[data-visible]:active {
+      transform: none;
+      transition: none;
+    }
   }
 }
 
