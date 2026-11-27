@@ -1,3 +1,259 @@
 @use "./variables.scss" as *;
 
 // put your custom CSS here!
+
+/* ==========================================================================
+   첫 화면(Home) 랜딩 — content/index.md 의 .home-* 마크업 + recent-notes
+   토큰만 사용한다 (DESIGN_SPEC.md §2). 다크 모드는 변수로 자동 대응.
+   ========================================================================== */
+
+body[data-slug="index"] {
+  // 첫 화면에서는 수정일·읽기 시간이 의미 없다
+  .content-meta {
+    display: none;
+  }
+}
+
+.home-hero {
+  margin: 0.5rem 0 2rem;
+  padding: 1.75rem 2rem;
+  border: 1px solid var(--lightgray);
+  border-left: 4px solid var(--secondary);
+  border-radius: 12px;
+  background-color: color-mix(in srgb, var(--secondary) 5%, var(--light));
+  word-break: keep-all;
+
+  p {
+    margin: 0;
+  }
+
+  &__badge {
+    display: inline-block;
+    margin-bottom: 0.75rem !important;
+    padding: 0.15rem 0.65rem;
+    border-radius: 999px;
+    background-color: var(--highlight);
+    color: var(--secondary);
+    font-size: 0.8rem;
+    font-weight: $semiBoldWeight;
+  }
+
+  &__lead {
+    color: var(--dark);
+    font-size: 1.2rem;
+    font-weight: $semiBoldWeight;
+    line-height: 1.5;
+  }
+
+  &__sub {
+    margin-top: 0.4rem !important;
+    color: var(--darkgray);
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+}
+
+.home-cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+
+  // base.scss 의 a.internal (배경·패딩) 덮어쓰기
+  a.home-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 1.1rem 1.2rem;
+    border: 1px solid var(--lightgray);
+    border-radius: 10px;
+    background-color: var(--light);
+    line-height: 1.4;
+    font-weight: $normalWeight;
+    text-decoration: none;
+    transition:
+      transform 0.15s ease,
+      border-color 0.15s ease,
+      box-shadow 0.15s ease;
+
+    &:hover,
+    &:focus-visible {
+      transform: translateY(-2px);
+      border-color: var(--secondary);
+      box-shadow: 0 4px 14px color-mix(in srgb, var(--dark) 8%, transparent);
+      text-decoration: none;
+
+      &::after {
+        color: var(--secondary);
+        transform: translateX(3px);
+      }
+    }
+
+    // 진입 가능한 링크임을 보여 주는 화살표
+    &::after {
+      content: "→";
+      align-self: center;
+      margin-left: auto;
+      color: var(--gray);
+      transition:
+        transform 0.15s ease,
+        color 0.15s ease;
+    }
+  }
+
+  .home-card__icon {
+    font-size: 1.6rem;
+    line-height: 1;
+  }
+
+  .home-card__body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    min-width: 0;
+    word-break: keep-all;
+  }
+
+  .home-card__title {
+    color: var(--dark);
+    font-size: 1.02rem;
+    font-weight: $boldWeight;
+  }
+
+  .home-card__desc {
+    color: var(--darkgray);
+    font-size: 0.85rem;
+  }
+}
+
+.home-tags {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+
+  &__label {
+    margin-right: 0.25rem;
+    color: color-mix(in srgb, var(--darkgray) 75%, var(--light));
+    font-size: 0.85rem;
+    font-weight: $semiBoldWeight;
+  }
+
+  a.home-tag {
+    padding: 0.3rem 0.75rem;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    background-color: var(--highlight);
+    color: var(--secondary);
+    font-size: 0.85rem;
+    line-height: 1.4;
+    white-space: nowrap;
+    text-decoration: none;
+    transition:
+      border-color 0.15s ease,
+      color 0.15s ease;
+
+    &::before {
+      content: "#";
+      opacity: 0.6;
+      margin-right: 0.1rem;
+    }
+
+    &:hover,
+    &:focus-visible {
+      border-color: var(--secondary);
+      text-decoration: none;
+    }
+  }
+
+  a.home-tag--all {
+    border-color: var(--lightgray);
+    background-color: transparent;
+    color: var(--darkgray);
+
+    &::before {
+      content: none;
+    }
+  }
+}
+
+// recent-notes 플러그인 (첫 화면 afterBody)
+body[data-slug="index"] .recent-notes {
+  margin-top: 1rem;
+
+  & > h3 {
+    margin: 1.5rem 0 0.75rem;
+    font-size: 1.12rem;
+  }
+
+  ul.recent-ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .recent-li {
+    margin: 0;
+    padding: 0.85rem 0;
+    border-bottom: 1px solid var(--lightgray);
+
+    &:first-child {
+      border-top: 1px solid var(--lightgray);
+    }
+
+    h3 {
+      margin: 0;
+      font-size: 1rem;
+      line-height: 1.5;
+      word-break: keep-all;
+    }
+
+    .meta {
+      margin: 0.2rem 0 0;
+      color: color-mix(in srgb, var(--darkgray) 75%, var(--light));
+      font-size: 0.85rem;
+    }
+
+    ul.tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      margin: 0.5rem 0 0;
+      padding: 0;
+      list-style: none;
+
+      li {
+        margin: 0;
+      }
+
+      a.tag-link {
+        padding: 0.1rem 0.5rem;
+        border-radius: 999px;
+        font-size: 0.78rem;
+        font-weight: $normalWeight;
+      }
+    }
+  }
+}
+
+@media all and ($mobile) {
+  .home-hero {
+    padding: 1.25rem;
+
+    &__lead {
+      font-size: 1.08rem;
+    }
+  }
+
+  .home-cards {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.75rem;
+  }
+}
+
+@media all and ($tablet) {
+  .home-cards {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
