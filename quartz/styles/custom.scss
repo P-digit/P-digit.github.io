@@ -3,6 +3,91 @@
 // put your custom CSS here!
 
 /* ==========================================================================
+   디자인 토큰 (PR 12) — A안 "Precision Tech" (DESIGN_SPEC §2·§3)
+   색 9개는 quartz.config.yaml theme.colors. 여기서는 글꼴 스택·모서리·그림자 토큰.
+   Quartz 글꼴 변수는 @layer quartz-fonts 안에 있어 레이어 없는 :root 가 이긴다.
+   ========================================================================== */
+
+:root {
+  --bodyFont:
+    "Pretendard Variable", Pretendard, "Noto Sans KR", -apple-system, BlinkMacSystemFont, system-ui,
+    "Segoe UI", Roboto, sans-serif;
+  --headerFont: var(--bodyFont);
+  --titleFont: var(--bodyFont);
+  // Obsidian 호환 변수도 같은 글꼴로 (fonts 플러그인이 Noto Sans KR 로 채운다)
+  --font-text: var(--bodyFont);
+  --font-interface: var(--bodyFont);
+
+  // 모서리: 카드 10 · 코드/표/콜아웃 8 · 태그 6 (PR 14에서 컴포넌트에 적용)
+  --radius-card: 10px;
+  --radius-surface: 8px;
+  --radius-chip: 6px;
+
+  // 그림자: 평소엔 거의 보이지 않게, hover 때만 살짝 떠오름
+  --shadow-sm: 0 1px 2px color-mix(in srgb, var(--dark) 4%, transparent);
+  --shadow-md: 0 6px 16px -4px color-mix(in srgb, var(--dark) 12%, transparent);
+}
+
+/* ==========================================================================
+   타이포그래피 (PR 12) — 장문 한국어 + 영문 기술 용어 기준
+   ========================================================================== */
+
+body {
+  letter-spacing: -0.01em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+// 제목: 자간을 조금 더 좁혀 단단하게.
+// fonts 플러그인이 레이어 밖에 `h1 { font-family: Noto Sans KR }` 를 넣으므로 선택자를 높여 덮는다.
+html body :is(h1, h2, h3, h4, h5, h6, .page-title) {
+  font-family: var(--headerFont);
+  letter-spacing: -0.025em;
+}
+
+// 코드는 고정폭 그대로 (음수 자간 해제)
+pre,
+code,
+kbd {
+  letter-spacing: 0;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--secondary) 22%, transparent);
+  color: var(--dark);
+}
+
+article {
+  // 본문 행간: base 의 1.6rem 고정값 → 글자 크기 비례 1.75
+  p,
+  li {
+    line-height: 1.75;
+  }
+
+  // 본문 속 링크: 형광 배경 대신 얇은 밑줄 (태그 칩·이미지 링크 제외)
+  :is(p, li, td, th, blockquote) a:not(.tag-link):not(:has(> img)) {
+    padding: 0;
+    border-radius: 0;
+    background-color: transparent;
+    line-height: inherit;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-decoration-color: color-mix(in srgb, var(--secondary) 35%, transparent);
+    text-underline-offset: 0.22em;
+    transition:
+      color 0.15s ease,
+      text-decoration-color 0.15s ease;
+
+    &:hover,
+    &:focus-visible {
+      color: var(--secondary);
+      text-decoration-color: currentColor;
+    }
+  }
+}
+
+/* ==========================================================================
    전역 타이포그래피 (PR 3)
    한국어는 어절 단위로 줄바꿈한다(keep-all). 긴 영문·경로·URL은
    break-word로 넘침만 막는다 — anywhere와 달리 표 칸의 최소 폭을 줄이지 않는다.
