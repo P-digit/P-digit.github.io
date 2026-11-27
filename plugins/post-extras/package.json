@@ -34,6 +34,19 @@
         "defaultPosition": "afterBody",
         "defaultPriority": 1
       }
+    },
+    "defaultOptions": {
+      "tagLabelsFile": ".notion-sync/tag-labels.json"
+    },
+    "configSchema": {
+      "type": "object",
+      "properties": {
+        "tagLabelsFile": {
+          "type": "string",
+          "description": "태그 슬러그 → 표시 이름 JSON 파일 (사이트 루트 기준)"
+        }
+      },
+      "additionalProperties": false
     }
   },
   "main": "./dist/index.js",

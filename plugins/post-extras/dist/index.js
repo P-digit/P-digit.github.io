@@ -1,5 +1,8 @@
+import { readFileSync } from "node:fs"
+import path from "node:path"
+
 // P-digit 블로그 전용 로컬 플러그인 (빌드 단계 없는 플레인 ESM)
-// - transformer: 코드 블록 복사 버튼 스크립트 + 영문 UI 라벨 한국어화 스크립트를 모든 페이지에 넣는다
+// - transformer: 코드 블록 복사 버튼 · 영문 UI 라벨 한국어화 · 태그 표시 이름 스크립트를 모든 페이지에 넣는다
 // - component: PostNav (dist/components/index.js)
 // 스타일은 quartz/styles/custom.scss 에 있다 (.code-actions, .post-nav)
 
@@ -107,17 +110,63 @@ const uiLabelScript = `
 })()
 `
 
-export const plugin = () => ({
+// 태그 표시 이름: Quartz는 태그를 소문자 슬러그(예: "isaac-sim")로 보여 준다.
+// 노션 동기화가 만든 .notion-sync/tag-labels.json (슬러그 → 원래 이름) 을 빌드 때 읽어
+// 스크립트에 넣고, 화면의 태그 링크·태그 페이지 제목만 원래 이름("Isaac Sim")으로 바꾼다.
+// 링크 주소(/tags/isaac-sim)는 그대로다.
+function readTagLabels(file) {
+  try {
+    const data = JSON.parse(readFileSync(path.resolve(process.cwd(), file), "utf8"))
+    return data && typeof data === "object" && !Array.isArray(data) ? data : {}
+  } catch {
+    return {}
+  }
+}
+
+const tagLabelScript = (labels) => `
+(() => {
+  const LABELS = ${JSON.stringify(labels)}
+  const label = (text) => {
+    const raw = (text ?? "").trim()
+    const hash = raw.startsWith("#") ? "#" : ""
+    return LABELS[raw.slice(hash.length)] !== undefined ? hash + LABELS[raw.slice(hash.length)] : undefined
+  }
+  function apply() {
+    for (const a of document.querySelectorAll("a.tag-link")) {
+      const next = label(a.textContent)
+      if (next !== undefined && a.childElementCount === 0) a.textContent = next
+    }
+    // 태그 페이지(tags/<슬러그>) 제목과 탭 제목
+    const slug = document.body?.dataset.slug ?? ""
+    if (slug.startsWith("tags/")) {
+      const name = LABELS[decodeURIComponent(slug.slice(5))]
+      if (name !== undefined) {
+        const h1 = document.querySelector(".page-header .article-title")
+        if (h1 && h1.childElementCount === 0) h1.textContent = name
+        document.title = document.title.replace(/^[^|]*/, (t) => t.replace(slug.slice(5), name))
+      }
+    }
+  }
+  document.addEventListener("nav", apply)
+  document.addEventListener("render", apply)
+})()
+`
+
+export const plugin = (opts) => ({
   name: "PostExtras",
   // 본문은 바꾸지 않는다. Quartz가 transformer로 인식하려면 이 메서드 중 하나가 있어야 한다.
   htmlPlugins() {
     return []
   },
   externalResources() {
+    const labels = readTagLabels(opts?.tagLabelsFile ?? ".notion-sync/tag-labels.json")
     return {
       js: [
         { loadTime: "afterDOMReady", contentType: "inline", script: copyScript },
         { loadTime: "afterDOMReady", contentType: "inline", script: uiLabelScript },
+        ...(Object.keys(labels).length
+          ? [{ loadTime: "afterDOMReady", contentType: "inline", script: tagLabelScript(labels) }]
+          : []),
       ],
     }
   },
