@@ -2,7 +2,8 @@ import { readFileSync } from "node:fs"
 import path from "node:path"
 
 // P-digit 블로그 전용 로컬 플러그인 (빌드 단계 없는 플레인 ESM)
-// - transformer: 코드 블록 복사 버튼 · 영문 UI 라벨 한국어화 · 태그 표시 이름 스크립트를 모든 페이지에 넣는다
+// - transformer: 코드 블록 복사 버튼 · 영문 UI 라벨 한국어화 · 태그 표시 이름 스크립트와
+//   외부 스타일시트(웹 글꼴, stylesheets 옵션)를 모든 페이지에 넣는다
 // - component: PostNav (dist/components/index.js)
 // 스타일은 quartz/styles/custom.scss 에 있다 (.code-actions, .post-nav)
 
@@ -160,7 +161,10 @@ export const plugin = (opts) => ({
   },
   externalResources() {
     const labels = readTagLabels(opts?.tagLabelsFile ?? ".notion-sync/tag-labels.json")
+    // 외부 스타일시트(웹 글꼴 등): <link rel="stylesheet"> 로 들어간다
+    const stylesheets = (opts?.stylesheets ?? []).filter((u) => typeof u === "string" && u)
     return {
+      css: stylesheets.map((content) => ({ content })),
       js: [
         { loadTime: "afterDOMReady", contentType: "inline", script: copyScript },
         { loadTime: "afterDOMReady", contentType: "inline", script: uiLabelScript },

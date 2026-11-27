@@ -62,7 +62,7 @@ Quartz 빌드 → GitHub Pages 배포
 
 | 파일                                          | 역할                                                                                                      |
 | --------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
-| `quartz.config.yaml`                          | 사이트 설정 (제목, `ko-KR`, `baseUrl: p-digit.github.io`, Noto Sans KR 글꼴)                              |
+| `quartz.config.yaml`                          | 사이트 설정 (제목, `ko-KR`, `baseUrl: p-digit.github.io`, 색·글꼴 토큰 — 디자인은 `DESIGN_SPEC.md`)       |
 | `scripts/notion-sync.mjs`                     | 노션 → 마크다운 변환 (추가 패키지 없음). 노션 속성 이름이 바뀌면 위쪽 `PROPS`, 범주는 `CATEGORIES`만 수정 |
 | `.notion-sync/manifest.json`                  | 동기화 기록 (노션 페이지 ↔ 파일, 옛 주소 aliases)                                                         |
 | `.notion-sync/tag-labels.json`                | 태그 슬러그 → 노션 원래 이름 표 (동기화가 생성, 화면의 `#isaac-sim`을 `#Isaac Sim`으로 표시)              |

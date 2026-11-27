@@ -24,35 +24,50 @@
 - 글의 폴더나 슬러그가 바뀌면 동기화 스크립트가 옛 경로를 `aliases`로 남겨 옛 링크가 리다이렉트된다.
 - 범주 소개 `content/<폴더>/index.md`는 `title` + 본문 한두 문장. 범주 목록 페이지에서는 작성일·읽기 시간을 숨기고, 글이 없으면 "아직 올라온 글이 없습니다."를 보여 준다.
 
-## 2. 컬러 팔레트 (`quartz.config.yaml > theme.colors`)
+## 2. 컬러 팔레트 (`quartz.config.yaml > theme.colors`) — A안 "Precision Tech" (PR 12)
 
-Quartz는 아래 토큰을 CSS 변수(`var(--light)` 등)로 노출한다. 새 색을 하드코딩하지 말고 토큰이나 `color-mix()`로 파생한다.
+2026-11-27 사용자 결정: Linear·Vercel·Stripe 문서 같은 쿨 슬레이트 + 로열 블루. Quartz는 아래 토큰을 CSS 변수(`var(--light)` 등)로 노출한다. 새 색을 하드코딩하지 말고 토큰이나 `color-mix()`로 파생한다.
 
-| 토큰              | 용도                                | Light                   | Dark        |
-| ----------------- | ----------------------------------- | ----------------------- | ----------- |
-| `--light`         | 페이지 배경                         | `#faf8f8`               | `#161618`   |
-| `--lightgray`     | 테두리·구분선·카드 배경             | `#e5e5e5`               | `#393639`   |
-| `--gray`          | 보조 텍스트(날짜·메타), 그래프 노드 | `#b8b8b8`               | `#646464`   |
-| `--darkgray`      | 본문 텍스트                         | `#4e4e4e`               | `#d4d4d4`   |
-| `--dark`          | 제목·강조 텍스트                    | `#2b2b2b`               | `#ebebec`   |
-| `--secondary`     | 링크·사이트 제목·포인트 색          | `#284b63`               | `#7b97aa`   |
-| `--tertiary`      | hover·선택 상태                     | `#84a59d`               | `#84a59d`   |
-| `--highlight`     | 내부 링크·태그 배경                 | `rgba(143,159,169,.15)` | 같음        |
-| `--textHighlight` | `==형광펜==`                        | `#fff23688`             | `#b3aa0288` |
+| 토큰              | 용도                       | Light                 | Dark                   |
+| ----------------- | -------------------------- | --------------------- | ---------------------- |
+| `--light`         | 페이지 배경                | `#ffffff`             | `#0b0f17`              |
+| `--lightgray`     | 테두리·구분선·면           | `#e2e8f0`             | `#1e293b`              |
+| `--gray`          | 비활성·그래프 노드         | `#94a3b8`             | `#64748b`              |
+| `--darkgray`      | 본문 텍스트                | `#334155`             | `#cbd5e1`              |
+| `--dark`          | 제목·강조 텍스트           | `#0f172a`             | `#f8fafc`              |
+| `--secondary`     | 링크·사이트 제목·포인트 색 | `#2563eb`             | `#60a5fa`              |
+| `--tertiary`      | hover·완료 상태 (틸)       | `#0d9488`             | `#2dd4bf`              |
+| `--highlight`     | 칩·내부 링크 배경          | `rgba(37,99,235,.08)` | `rgba(96,165,250,.14)` |
+| `--textHighlight` | `==형광펜==`               | `#fef08a99`           | `#ca8a0466`            |
 
+- 대비(라이트): 본문 `#334155` / `#fff` 10.35:1, 링크 `#2563eb` 5.17:1 (WCAG AA 이상).
 - 다크 모드: `@quartz-community/darkmode` 토글이 `html[saved-theme="dark"]`를 바꾼다. 커스텀 스타일은 변수만 쓰면 양쪽 모드가 자동으로 맞는다.
-- 코드 하이라이트: Shiki `github-light` / `github-dark`, `keepBackground: false`
+- 코드 하이라이트: Shiki `github-light` / `github-dark`, `keepBackground: false` (슬레이트 팔레트와 어울림)
 
-## 3. 타이포그래피
+### 2.1 모서리 · 그림자 토큰 (`custom.scss :root`)
 
-| 역할                  | 글꼴          | 비고         |
-| --------------------- | ------------- | ------------ |
-| 헤더 (`--headerFont`) | Noto Sans KR  | Google Fonts |
-| 본문 (`--bodyFont`)   | Noto Sans KR  |              |
-| 코드 (`--codeFont`)   | IBM Plex Mono |              |
+| 토큰               | 값                                      | 쓰임                    |
+| ------------------ | --------------------------------------- | ----------------------- |
+| `--radius-card`    | 10px                                    | 카드                    |
+| `--radius-surface` | 8px                                     | 코드 블록·표·콜아웃     |
+| `--radius-chip`    | 6px                                     | 태그 칩(PR 14에서 적용) |
+| `--shadow-sm`      | `0 1px 2px color-mix(--dark 4%)`        | 평소 카드               |
+| `--shadow-md`      | `0 6px 16px -4px color-mix(--dark 12%)` | hover로 떠오를 때       |
 
-- 제목 크기(base.scss): h1 1.75rem(글 제목 `article > h1` 2rem), h2 1.4rem, h3 1.12rem, h4~h6 1rem
-- 굵기: 본문 400, 링크·`strong` 600, 제목 700
+## 3. 타이포그래피 (PR 12)
+
+| 역할                  | 글꼴                | 불러오는 곳                                                                  |
+| --------------------- | ------------------- | ---------------------------------------------------------------------------- |
+| 제목·본문·사이트 제목 | Pretendard Variable | jsDelivr CDN dynamic subset (`plugins/post-extras` 의 `stylesheets` 옵션)    |
+| 대체 글꼴             | Noto Sans KR        | Google Fonts (`theme.typography`). Pretendard에 없는 글자·CDN 실패 때만 받음 |
+| 코드 (`--codeFont`)   | JetBrains Mono      | Google Fonts                                                                 |
+
+- 글꼴 변수는 `custom.scss :root`에서 덮는다(`--bodyFont`·`--headerFont`·`--titleFont`·`--font-text`·`--font-interface`). fonts 플러그인이 레이어 밖에 `h1~h6 { font-family }`를 넣으므로 제목은 `html body :is(h1…h6, .page-title)`로 덮는다.
+- 자간: 본문 `-0.01em`, 제목 `-0.025em`, 코드 `0`. 글꼴 매끄럽게(`-webkit-font-smoothing: antialiased`).
+- 행간: 글 본문 `p`·`li` 1.75(16px → 28px). 표 1.55, 코드 1.65.
+- 제목 크기(base.scss): h1 1.75rem(글 제목 `article > h1` 2rem), h2 1.4rem, h3 1.12rem, h4~h6 1rem. 굵기: 본문 400, 링크·`strong` 600, 제목 700.
+- 본문 속 링크: 형광 배경 없이 1px 밑줄(`color-mix(--secondary 35%)`, offset .22em), hover 때 밑줄 진하게. 태그 칩·이미지 링크는 제외.
+- 선택 영역: `color-mix(--secondary 22%)`.
 - 한국어 장문 규칙(PR 3에서 전역 적용): `body { word-break: keep-all; overflow-wrap: break-word }`. 어절 단위로 줄바꿈하고, 긴 영문·경로는 `break-word`로 넘침만 막는다. `anywhere`는 표 칸의 최소 폭까지 줄여 표가 찌그러지므로 본문에는 쓰지 않는다. `pre`, `code`는 `word-break: normal`.
 
 ## 4. 레이아웃 구조

@@ -36,7 +36,8 @@
       }
     },
     "defaultOptions": {
-      "tagLabelsFile": ".notion-sync/tag-labels.json"
+      "tagLabelsFile": ".notion-sync/tag-labels.json",
+      "stylesheets": []
     },
     "configSchema": {
       "type": "object",
@@ -44,6 +45,13 @@
         "tagLabelsFile": {
           "type": "string",
           "description": "태그 슬러그 → 표시 이름 JSON 파일 (사이트 루트 기준)"
+        },
+        "stylesheets": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "모든 페이지 <head>에 넣을 외부 스타일시트 URL (웹 글꼴 등)"
         }
       },
       "additionalProperties": false
