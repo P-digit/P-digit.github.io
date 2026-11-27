@@ -112,7 +112,7 @@ Quartz는 아래 토큰을 CSS 변수(`var(--light)` 등)로 노출한다. 새 �
 
 ### 7.2 첫 화면 — 범주 허브 (PR 1 → PR 5에서 개편)
 
-- 페이지 제목 "P-digit 개발 기록". 순서: 글 제목(h1) → hero(뱃지 "개인 개발 블로그" + lead + sub) → "범주" 소제목(`h2.home-section-title`, 1.12rem) → 범주 카드 5개(`nav.home-cards`, `aria-label="범주"`) → 태그 칩 → 최근 글
+- 페이지 제목 "P-digit 개발 기록". 순서: 글 제목(h1) → hero(뱃지 "개인 개발 블로그" + lead + sub) → "범주" 소제목(`h2.home-section-title`, 1.12rem) → 범주 카드 5개(`nav.home-cards`, `aria-label="범주"`) → (본문 끝 구분선) → 태그 칩(`plugins/home-tags`, afterBody) → 최근 글
 - 범주 카드 그리드: 2열. **연재 중인 범주는 `.home-card--featured`**(`grid-column: 1 / -1`, 배경 `color-mix(--secondary 4%)`, "연재 중" 뱃지 `.home-card__badge`, 아이콘 2rem)로 한 줄 전체, 나머지 4개는 2×2. 모바일(≤800px)은 1열. `auto-fit`은 본문 750px에서 3+2로 떨어져 쓰지 않는다.
 - 연재 중인 범주가 바뀌면 `--featured` 클래스와 뱃지를 옮긴다. 범주 카드 설명은 짧은 키워드(`·` 구분), featured만 한 문장.
 - 첫 화면에서는 `.content-meta`(수정일·읽기 시간)를 숨긴다 (`body[data-slug="index"]`).
@@ -176,3 +176,9 @@ Quartz는 아래 토큰을 CSS 변수(`var(--light)` 등)로 노출한다. 새 �
 
 - 복사 버튼 `.code-copy`: `min-width: 4.8em` 가운데 정렬(문구가 바뀌어도 폭 고정), 실패 상태는 점선 테두리 + `--dark`(빨강 토큰 없음).
 - 태그 표시 이름(PR 10): Quartz는 태그를 소문자 슬러그(`#isaac-sim`)로 보여 준다. 노션 동기화가 `.notion-sync/tag-labels.json`(슬러그 → 노션 원래 이름, 슬러그와 이름이 다른 것만)을 만들고, `plugins/post-extras`가 빌드 때 읽어 넣은 스크립트로 `a.tag-link` 글자와 태그 페이지 제목·탭 제목만 원래 이름(`#Isaac Sim`)으로 바꾼다. 링크 주소는 슬러그 그대로.
+
+### 7.9 첫 화면 태그 칩 · 푸터 링크 (PR 11)
+
+- **태그 칩** `nav.home-tags`(`plugins/home-tags`, afterBody priority 3, `is-index`): 글 페이지의 태그를 세어 많이 쓰인 순(동률은 이름 가나다순), 최대 12개 + "전체 태그 →". 이름은 `.notion-sync/tag-labels.json`(빌드 때 읽음, 깜빡임 없음). 손으로 관리하던 칩은 없앴다.
+- 글 수 배지 `.home-tag__count`: 이름 끝 숫자("ROS 2")와 헷갈리지 않게 작은 둥근 배지(배경 `--light`, 글자 `color-mix(--secondary 75%)`, .72rem, 숫자 폭 고정). 칩 padding .3rem .6rem, gap .4rem.
+- **푸터 링크**: 외부 링크는 `target="_blank" rel="noopener noreferrer"` + `aria-label="… (새 탭)"`. 색은 푸터 글자색(`p`·`li`도 inherit로 base의 `--darkgray` 해제) + semibold, hover·focus 때만 `--secondary` + 밑줄.
