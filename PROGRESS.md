@@ -15,6 +15,10 @@
 - 2026-11-27 **[PR 2] 글 목록 (`/notes/` · 태그 페이지)** (`design/note-list`, Gemini 검수 1회차 `<DONE>`)
   - `note-row` / `note-tags` mixin을 추출해 첫 화면 recent-notes 행과 같은 시각 언어로 통일
   - 날짜 한 줄 고정, 태그 칩 가로 래핑, 모바일에서도 태그 표시, 행 hover·focus 배경
+- 2026-11-27 **[PR 3] 모바일 헤더 · 전역 타이포그래피** (`design/mobile-header-typography`, Gemini 검수 1회차 `<DONE>`)
+  - 375px 헤더: 제목 한 줄(1.25rem, 넘치면 말줄임), 검색 아이콘 버튼화 → 헤더 높이 113px → 69px
+  - 전역 `word-break: keep-all` + `overflow-wrap: break-word` (코드는 예외)
+  - 첫 화면 최근 노트 행에도 hover·focus 배경 적용(`note-row` mixin으로 통합)
 
 ## [알려진 UI/기능 이슈]
 
@@ -23,14 +27,14 @@
 1. ~~첫 화면이 비어 보임~~ — PR 1에서 해결
 2. ~~깨진 태그 링크 `tags/에러-해결`~~ — PR 1에서 해결
 3. ~~글 목록(`/notes/`)의 날짜가 두 줄로 꺾임 · 태그 세로 쌓임 · 모바일 태그 숨김~~ — PR 2에서 해결
-4. **모바일 헤더 제목 줄바꿈** — 375px에서 "P-digit 개발 / 기록"이 두 줄로 꺾인다.
-5. **글 상단의 Properties 패널** — description·tags가 원시 속성 표로 드러나 본문 시작이 아래로 밀린다(모바일에서 특히 길다).
+4. ~~모바일 헤더 제목 줄바꿈~~ — PR 3에서 해결
+5. **글 상단의 Properties 패널** — description·tags가 원시 속성 표로 드러나 본문 시작이 아래로 밀린다(모바일에서 특히 길다). description 칸은 전역 `keep-all` 이후에도 음절 단위로 꺾인다.
 6. **영문 UI 문자열 섞임** — "1 min read", 폴더 이름 "notes", "Home", "Created with Quartz".
 7. **표가 모바일 폭을 약간 넘음** — 3일차 글의 표가 375px에서 6px 넘친다(표 컨테이너 안에서 가로 스크롤은 됨).
 8. **로컬 도구** — 시스템 Node는 없어 `~/.local/opt`에 설치해 두었다. `gh` CLI는 2026-11-27 기준 설치됨(`/usr/bin/gh`).
 9. **첫 화면 태그 칩은 손으로 관리** — `content/index.md`의 카드·태그 칩은 고정 마크업이다. 노션에 새 태그가 생기면 칩을 추가해야 한다(최근 노트 목록은 자동).
 10. **태그가 소문자 슬러그로 표시** — 첫 화면·글 목록 모두 `#isaac-sim`처럼 보인다. 태그 텍스트는 플러그인이 슬러그로 렌더링해서 CSS만으로는 못 바꾼다 → PR 6(한국어화)에서 노션 태그명 또는 표시 이름 매핑으로 다룬다.
-11. **첫 화면 recent-notes 행에는 hover 배경이 없다** — 글 목록 `.section-li`에만 있다. hover·좌우 padding을 `note-row` mixin으로 옮기면 통일된다(Gemini PR 2 제안).
+11. ~~첫 화면 recent-notes 행에 hover 배경 없음~~ — PR 3에서 해결
 
 ## [다음 디자인/기능 백로그]
 
@@ -38,7 +42,7 @@
 
 1. ~~[PR 1] 첫 화면 랜딩 허브~~ ✅
 2. ~~[PR 2] 글 목록(`/notes/` · 태그 페이지)~~ ✅ — 날짜 한 줄 고정(`white-space: nowrap`), 태그 칩 가로 래핑, 행 hover, 모바일 태그 표시. 첫 화면 recent-notes 행(`.recent-li`: 상하 보더 `1px solid var(--lightgray)`, 패딩 `0.85rem 0`, 같은 태그 칩)과 같은 시각 언어로 `.section-li`를 통일 (새 Gemini 제안)
-3. **[PR 3] 모바일 헤더 · 전역 타이포그래피** — 375px 제목 한 줄, `word-break: keep-all`. 함께: recent-notes 행 hover 통일(이슈 11)
-4. [PR 4] 글 머리 정리 — Properties 패널 축소/숨김, 날짜·읽기 시간 뱃지화
+3. ~~[PR 3] 모바일 헤더 · 전역 타이포그래피~~ ✅
+4. **[PR 4] 글 머리 정리** — Properties 패널을 컴팩트한 메타 요약 바로(축소/숨김), 날짜·읽기 시간 뱃지화, 모바일에서 헤더와 브레드크럼·글 제목 사이 간격 조정(Gemini PR 3 제안)
 5. [PR 5] 본문 가독성 — 표 모바일 넘침, 코드 블록 라운딩·복사 버튼, 콜아웃, 이전/다음 글 내비게이션(Gemini 2차 제안)
 6. [PR 6] UI 문자열 한국어화와 footer 정리 — "min read", "Created with Quartz", 폴더명 `notes`
