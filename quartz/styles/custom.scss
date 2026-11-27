@@ -28,6 +28,65 @@
   --shadow-md: 0 6px 16px -4px color-mix(in srgb, var(--dark) 12%, transparent);
 }
 
+// 태그 칩 공통 (PR 14): 6px 사각 배지 — 글 목록·최근 글·글 상단·첫 화면이 모두 이 모양
+@mixin chip {
+  padding: 0.12rem 0.5rem;
+  border: 1px solid color-mix(in srgb, var(--secondary) 18%, transparent);
+  border-radius: var(--radius-chip);
+  background-color: var(--highlight);
+  color: var(--secondary);
+  font-size: 0.78rem;
+  font-weight: 500;
+  line-height: 1.5;
+  text-decoration: none;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease;
+
+  &::before {
+    content: "#";
+    margin-right: 0.05rem;
+    opacity: 0.55;
+  }
+
+  &:hover,
+  &:focus-visible {
+    border-color: color-mix(in srgb, var(--secondary) 55%, transparent);
+    background-color: color-mix(in srgb, var(--secondary) 12%, var(--light));
+    color: var(--secondary);
+    text-decoration: none;
+  }
+}
+
+// 링크 카드 공통 (PR 14): 평소 --shadow-sm, hover·focus 때 살짝 떠오름
+@mixin lift-card {
+  border: 1px solid var(--lightgray);
+  border-radius: var(--radius-card);
+  background-color: var(--light);
+  box-shadow: var(--shadow-sm);
+  transition:
+    transform 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+
+  &:hover,
+  &:focus-visible {
+    transform: translateY(-2px);
+    border-color: color-mix(in srgb, var(--secondary) 45%, var(--lightgray));
+    box-shadow: var(--shadow-md);
+    text-decoration: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+
+    &:hover,
+    &:focus-visible {
+      transform: none;
+    }
+  }
+}
+
 /* ==========================================================================
    타이포그래피 (PR 12) — 장문 한국어 + 영문 기술 용어 기준
    ========================================================================== */
@@ -266,7 +325,7 @@ code {
 
   .multi-select-pill {
     padding: 0;
-    border-radius: 999px;
+    border-radius: var(--radius-chip);
     background: none;
     font-size: inherit;
 
@@ -276,24 +335,7 @@ code {
   }
 
   a.note-properties-tag {
-    padding: 0.1rem 0.55rem;
-    border-radius: 999px;
-    background-color: var(--highlight);
-    color: var(--secondary);
-    font-size: 0.8rem;
-    font-weight: $normalWeight;
-
-    &::before {
-      content: "#";
-      opacity: 0.6;
-    }
-
-    &:hover,
-    &:focus-visible {
-      background-color: var(--highlight);
-      color: var(--secondary);
-      box-shadow: inset 0 0 0 1px var(--secondary);
-    }
+    @include chip;
   }
 }
 
@@ -500,19 +542,13 @@ article {
     gap: 0.25rem;
     min-width: 0;
     padding: 0.85rem 1rem;
-    border: 1px solid var(--lightgray);
-    border-radius: 10px;
-    background-color: var(--light);
     font-weight: $normalWeight;
     text-decoration: none;
-    transition:
-      border-color 0.15s ease,
-      background-color 0.15s ease;
+    @include lift-card;
 
-    &:hover,
-    &:focus-visible {
-      border-color: var(--secondary);
-      background-color: color-mix(in srgb, var(--secondary) 4%, var(--light));
+    &:hover .post-nav__title,
+    &:focus-visible .post-nav__title {
+      color: var(--secondary);
     }
   }
 
@@ -761,6 +797,24 @@ button.readermode {
   .sidebar.left .page-title {
     font-weight: 800;
   }
+
+  // ☰ 탐색기 버튼도 오른쪽 툴바와 같은 정사각 (PR 14, 이슈 23)
+  .explorer button.mobile-explorer {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: $control-h;
+    height: $control-h;
+    margin: 0;
+    padding: 0;
+    border-radius: var(--radius-surface);
+    transition: background-color 0.15s ease;
+
+    &:hover,
+    &:focus-visible {
+      background-color: var(--highlight);
+    }
+  }
 }
 
 /* ==========================================================================
@@ -832,24 +886,13 @@ body[data-slug="index"] {
     align-items: flex-start;
     gap: 0.75rem;
     padding: 1.1rem 1.2rem;
-    border: 1px solid var(--lightgray);
-    border-radius: 10px;
-    background-color: var(--light);
     line-height: 1.4;
     font-weight: $normalWeight;
     text-decoration: none;
-    transition:
-      transform 0.15s ease,
-      border-color 0.15s ease,
-      box-shadow 0.15s ease;
+    @include lift-card;
 
     &:hover,
     &:focus-visible {
-      transform: translateY(-2px);
-      border-color: var(--secondary);
-      box-shadow: 0 4px 14px color-mix(in srgb, var(--dark) 8%, transparent);
-      text-decoration: none;
-
       &::after {
         color: var(--secondary);
         transform: translateX(3px);
@@ -895,7 +938,7 @@ body[data-slug="index"] {
     display: inline-block;
     margin-left: 0.4rem;
     padding: 0.05rem 0.5rem;
-    border-radius: 999px;
+    border-radius: var(--radius-chip);
     background-color: var(--highlight);
     color: var(--secondary);
     font-size: 0.72rem;
@@ -939,30 +982,11 @@ body[data-slug="index"] {
   }
 
   a.home-tag {
-    padding: 0.3rem 0.6rem;
-    border: 1px solid transparent;
-    border-radius: 999px;
-    background-color: var(--highlight);
-    color: var(--secondary);
+    @include chip;
+    // 첫 화면 칩은 글 목록 칩보다 한 단계 크게
+    padding: 0.28rem 0.6rem;
     font-size: 0.85rem;
-    line-height: 1.4;
     white-space: nowrap;
-    text-decoration: none;
-    transition:
-      border-color 0.15s ease,
-      color 0.15s ease;
-
-    &::before {
-      content: "#";
-      opacity: 0.6;
-      margin-right: 0.1rem;
-    }
-
-    &:hover,
-    &:focus-visible {
-      border-color: var(--secondary);
-      text-decoration: none;
-    }
   }
 
   // 글 수 (plugins/home-tags): 이름 끝 숫자(예: "ROS 2")와 헷갈리지 않게 작은 배지로
@@ -971,7 +995,7 @@ body[data-slug="index"] {
     min-width: 1rem;
     margin-left: 0.3rem;
     padding: 0 0.25rem;
-    border-radius: 999px;
+    border-radius: 4px;
     background-color: var(--light);
     color: color-mix(in srgb, var(--secondary) 75%, var(--light));
     font-size: 0.72rem;
@@ -985,6 +1009,13 @@ body[data-slug="index"] {
     border-color: var(--lightgray);
     background-color: transparent;
     color: var(--darkgray);
+
+    &:hover,
+    &:focus-visible {
+      border-color: color-mix(in srgb, var(--secondary) 45%, var(--lightgray));
+      background-color: transparent;
+      color: var(--dark);
+    }
 
     &::before {
       content: none;
@@ -1007,10 +1038,7 @@ body[data-slug="index"] {
   }
 
   a.tag-link {
-    padding: 0.1rem 0.5rem;
-    border-radius: 999px;
-    font-size: 0.78rem;
-    font-weight: $normalWeight;
+    @include chip;
   }
 }
 
@@ -1020,9 +1048,14 @@ body[data-slug="index"] {
   border-bottom: 1px solid var(--lightgray);
   transition: background-color 0.15s ease;
 
+  // hover 배경은 중립 회색(칩의 파란 배경과 겹치지 않게), 제목만 포인트 색으로
   &:hover,
   &:focus-within {
-    background-color: var(--highlight);
+    background-color: color-mix(in srgb, var(--lightgray) 35%, transparent);
+
+    h3 a {
+      color: var(--secondary);
+    }
   }
 
   &:first-child {
@@ -1031,16 +1064,23 @@ body[data-slug="index"] {
 
   h3 {
     margin: 0;
-    font-size: 1rem;
+    font-size: 1.02rem;
+    font-weight: $semiBoldWeight;
     line-height: 1.5;
     word-break: keep-all;
     overflow-wrap: anywhere;
+
+    a {
+      color: var(--dark);
+      transition: color 0.15s ease;
+    }
   }
 
   .meta {
     margin: 0.2rem 0 0;
     color: color-mix(in srgb, var(--darkgray) 75%, var(--light));
     font-size: 0.85rem;
+    font-variant-numeric: tabular-nums;
     white-space: nowrap;
   }
 
