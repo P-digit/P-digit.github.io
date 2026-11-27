@@ -120,6 +120,16 @@ plugins:
     enabled: true
   - source: "@quartz-community/explorer"
     enabled: true
+    options:
+      # 범주 폴더는 정해진 순서(DESIGN_SPEC §1.1), 나머지는 기본 규칙(폴더 먼저, 가나다·숫자순)
+      sortFn: |-
+        (a, b) => {
+          const order = ["robotics", "algorithm", "embedded", "dev", "retro"];
+          const ia = order.indexOf(a.slugSegment), ib = order.indexOf(b.slugSegment);
+          if (ia !== -1 || ib !== -1) return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib);
+          if (a.isFolder !== b.isFolder) return a.isFolder ? -1 : 1;
+          return (a.displayName || "").localeCompare(b.displayName || "", undefined, { numeric: true, sensitivity: "base" });
+        }
     layout:
       position: left
       priority: 50

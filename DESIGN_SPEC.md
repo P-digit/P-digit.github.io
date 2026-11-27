@@ -5,7 +5,7 @@
 
 ## 1. 사이트 성격
 
-- **이름:** P-digit 개발 기록 (`pageTitle`) / 첫 화면 제목 "로보틱스 학습 기록"(범주 허브 PR에서 바꿀 예정)
+- **이름:** P-digit 개발 기록 (`pageTitle`) / 첫 화면 제목도 "P-digit 개발 기록"
 - **내용:** 여러 범주를 다루는 개인 개발 블로그(2026-11-27 확장 결정). 지금 올라온 글은 NVIDIA AI Campus 로보틱스 과정(Isaac Sim · ROS 2 · Isaac Lab) 일차별 노트뿐이다. 한국어 장문 + 표 + 코드 블록이 많다.
 - **독자 경험 목표:** 범주로 먼저 고르고, 범주 안에서는 순서대로 따라 읽기 쉽고, 태그(주제)로 범주를 넘어 되찾기 쉬우며, 긴 글을 모바일에서도 편하게 읽는 것.
 
@@ -108,12 +108,15 @@ Quartz는 아래 토큰을 CSS 변수(`var(--light)` 등)로 노출한다. 새 �
 | 링크형 블록            | `text-decoration: none` 명시, 진입 화살표 `→`(기본 `--gray`, hover `--secondary` + `translateX(3px)`)                                                                                        |
 | 리스트 행              | `@mixin note-row` / `note-tags` (custom.scss). 위아래 `1px solid var(--lightgray)` 구분선, 행 padding 0.85rem 0.75rem, 제목→날짜(nowrap)→태그 칩, hover·focus-within 배경 `var(--highlight)` |
 
-### 7.2 첫 화면 (PR 1)
+### 7.2 첫 화면 — 범주 허브 (PR 1 → PR 5에서 개편)
 
-- 순서: 글 제목(h1, 유일) → hero(뱃지 + lead + sub) → 바로가기 카드 3개 → 주제별 태그 칩 → 최근 학습 노트
+- 페이지 제목 "P-digit 개발 기록". 순서: 글 제목(h1) → hero(뱃지 "개인 개발 블로그" + lead + sub) → "범주" 소제목(`h2.home-section-title`, 1.12rem) → 범주 카드 5개(`nav.home-cards`, `aria-label="범주"`) → 태그 칩 → 최근 글
+- 범주 카드 그리드: 2열. **연재 중인 범주는 `.home-card--featured`**(`grid-column: 1 / -1`, 배경 `color-mix(--secondary 4%)`, "연재 중" 뱃지 `.home-card__badge`, 아이콘 2rem)로 한 줄 전체, 나머지 4개는 2×2. 모바일(≤800px)은 1열. `auto-fit`은 본문 750px에서 3+2로 떨어져 쓰지 않는다.
+- 연재 중인 범주가 바뀌면 `--featured` 클래스와 뱃지를 옮긴다. 범주 카드 설명은 짧은 키워드(`·` 구분), featured만 한 문장.
 - 첫 화면에서는 `.content-meta`(수정일·읽기 시간)를 숨긴다 (`body[data-slug="index"]`).
-- 카드 그리드: desktop 3열, tablet·mobile 1열. 마크업 링크는 Quartz 실제 슬러그(소문자, 상대경로 `./tags/ros-2`)와 `class="internal"`을 쓴다.
+- 마크업 링크는 Quartz 실제 슬러그(소문자, 상대경로 `./tags/ros-2`, 폴더는 `./robotics/`)와 `class="internal"`을 쓴다.
 - 레이아웃 조건 `is-index`는 `quartz.ts`에서 `registerCondition`으로 등록한다.
+- 탐색기 순서: `quartz.config.yaml` explorer `sortFn`(YAML 문자열 함수)으로 범주 폴더를 §1.1 표 순서로, 그 밖은 폴더 먼저·숫자 인식 가나다순.
 
 ### 7.3 글 목록 (PR 2)
 
