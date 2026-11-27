@@ -499,6 +499,9 @@ article {
   // 인라인 코드: 회색 덩어리 대신 옅은 배경
   :not(pre) > code {
     padding: 0.08rem 0.35rem;
+    // 얇은 테두리로 콜아웃·다크 모드에서도 경계가 또렷하게 (PR 17, 이슈 26)
+    border: 1px solid color-mix(in srgb, var(--lightgray) 90%, transparent);
+    border-radius: 4px;
     background-color: color-mix(in srgb, var(--lightgray) 60%, var(--light));
   }
 
@@ -867,6 +870,175 @@ button.readermode {
     &:focus-visible {
       background-color: var(--highlight);
     }
+  }
+}
+
+/* ==========================================================================
+   모션 · 동적 효과 (PR 17) — plugins/post-extras 의 motionScript 와 짝
+   원칙: 짧고(≤ .45s) 작게(≤ 8px). prefers-reduced-motion 이면 움직임 없음.
+   등장 애니메이션은 fill-mode backwards 라 끝나면 transform 이 남지 않는다
+   (transform 이 남으면 안쪽 position: fixed 요소 기준이 바뀐다).
+   ========================================================================== */
+
+$ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+
+@keyframes pd-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@keyframes pd-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes pd-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--tertiary) 22%, transparent);
+  }
+  50% {
+    box-shadow: 0 0 0 6px color-mix(in srgb, var(--tertiary) 0%, transparent);
+  }
+}
+
+@keyframes pd-pop {
+  40% {
+    transform: scale(1.08);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  // 페이지 등장: 글 머리 → 본문 순으로 살짝 떠오름
+  .center.page-enter {
+    & > .page-header {
+      animation: pd-enter 0.4s $ease-out backwards;
+    }
+
+    & > article,
+    & > .page-listing,
+    & > div:not(.page-header) {
+      animation: pd-enter 0.45s $ease-out 0.06s backwards;
+    }
+
+    // 첫 화면·목록: 카드·칩·행이 차례로 (최대 12개까지 40ms 간격)
+    @for $i from 1 through 12 {
+      .home-cards > :nth-child(#{$i}),
+      .home-tags > :nth-child(#{$i}),
+      .recent-ul > :nth-child(#{$i}),
+      .section-ul > :nth-child(#{$i}) {
+        animation: pd-enter 0.42s $ease-out #{0.08s + $i * 0.04s} backwards;
+      }
+    }
+  }
+
+  // hero 상태 점: 천천히 숨 쉬는 링 (이슈 25)
+  .home-hero__badge::before {
+    animation: pd-pulse 3.2s ease-in-out infinite;
+  }
+
+  // 복사 완료: 버튼이 살짝 튐
+  article .code-copy[data-state="done"] {
+    animation: pd-pop 0.28s $ease-out;
+  }
+
+  // 테마 전환 순간에만 색이 부드럽게 바뀜 (평소엔 전환 비용 없음)
+  html.theme-transition,
+  html.theme-transition *,
+  html.theme-transition *::before,
+  html.theme-transition *::after {
+    transition:
+      background-color 0.35s ease,
+      border-color 0.35s ease,
+      color 0.35s ease,
+      fill 0.35s ease,
+      stroke 0.35s ease !important;
+  }
+}
+
+// 움직임 줄이기: base.scss 의 html { scroll-behavior: smooth } 도 끈다 (목차·맨 위로 이동이 즉시)
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+// 읽기 진행 막대: 글 페이지 맨 위 2px (스크롤에 붙어 움직이므로 움직임 줄이기와 무관)
+.reading-progress {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 1000;
+  height: 2px;
+  background: linear-gradient(90deg, var(--secondary), var(--tertiary));
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  pointer-events: none;
+  will-change: transform;
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+// 맨 위로 버튼: 600px 넘게 내려가면 오른쪽 아래에 나타남
+.back-to-top {
+  position: fixed;
+  right: 1.5rem;
+  bottom: 1.5rem;
+  z-index: 900;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.6rem;
+  height: 2.6rem;
+  padding: 0;
+  border: 1px solid var(--lightgray);
+  border-radius: 50%;
+  background-color: color-mix(in srgb, var(--light) 88%, transparent);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  box-shadow: var(--shadow-md);
+  color: var(--darkgray);
+  font-family: var(--bodyFont);
+  font-size: 1.05rem;
+  cursor: pointer;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(8px);
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s $ease-out,
+    visibility 0.2s,
+    border-color 0.15s ease,
+    color 0.15s ease;
+
+  &[data-visible] {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+  }
+
+  &:hover,
+  &:focus-visible {
+    border-color: color-mix(in srgb, var(--secondary) 45%, var(--lightgray));
+    color: var(--secondary);
+  }
+
+  &[hidden] {
+    display: none;
+  }
+
+  @media all and ($mobile) {
+    right: 1rem;
+    bottom: 1rem;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transform: none;
+    transition: none;
   }
 }
 

@@ -230,3 +230,19 @@
 - **콜아웃 색**: 정보성(note·abstract·info·todo·question·quote)은 `--color: var(--secondary)`, 테두리 `color-mix(--secondary 24%)`, 배경 `color-mix(--secondary 5%)`. 팁·성공은 `--tertiary`(28%·6%). 경고·위험·실패·버그·예시는 의미 색이라 `callouts.scss` 기본값. 제목 semibold, 접히는 콜아웃 제목은 pointer + hover opacity .85.
 - **코드**: `tab-size: 4`, `font-variant-ligatures: none`(합자 없이 기호 그대로). `.code-actions`는 반투명 배경 `color-mix(--light 82%)` + `backdrop-filter: blur(4px)` + radius 7px.
 - **반경**: 표 컨테이너·코드 블록·콜아웃·본문 이미지 모두 `--radius-surface`(하드코딩 8px 없음). `hr`은 `--lightgray`.
+
+### 7.14 모션 · 동적 효과 (PR 17)
+
+원칙: 짧고(0.45s 이하) 작게(8px 이하), `cubic-bezier(.22, 1, .36, 1)`. **`prefers-reduced-motion: reduce`면 움직임 없음**(등장·펄스·전환 애니메이션 끔, `html { scroll-behavior: auto }`, 맨 위로는 즉시 이동). 스크립트는 `plugins/post-extras`의 `motionScript`.
+
+| 효과           | 규칙                                                                                                                                                                                                                                                 |
+| -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 페이지 등장    | `nav`마다 `.center`에 `page-enter`를 다시 붙여 재생(SPA가 DOM을 비교 갱신하므로). 글 머리 .4s → 본문 .45s(+.06s), `pd-enter`(opacity 0·translateY 8px → 원위치). fill-mode `backwards`라 끝나면 transform이 남지 않는다(안쪽 `position: fixed` 보호) |
+| 차례 등장      | 첫 화면 카드·태그 칩·최근 글 행·목록 행 1~12번째를 .08s + i×.04s 지연                                                                                                                                                                                |
+| 상태 점 펄스   | hero 배지 점의 틸 링 3px ↔ 6px 투명, 3.2s 무한                                                                                                                                                                                                       |
+| 읽기 진행 막대 | 글 페이지만, 화면 맨 위 2px, `linear-gradient(--secondary → --tertiary)`, 스크롤 비율로 `scaleX` (rAF)                                                                                                                                               |
+| 맨 위로 버튼   | 글 페이지만, 600px 넘게 내리면 오른쪽 아래 2.6rem 원형(반투명 흐림, `--shadow-md`), `aria-label="맨 위로"`                                                                                                                                           |
+| 테마 전환      | `themechange` 때만 450ms 동안 배경·테두리·글자색 .35s 전환                                                                                                                                                                                           |
+| 복사 완료      | 복사 버튼 `pd-pop`(scale 1.08) .28s                                                                                                                                                                                                                  |
+
+- 인라인 코드: 1px `color-mix(--lightgray 90%)` 테두리 + radius 4px (PR 17, 이슈 26).
