@@ -209,3 +209,10 @@
 | 목차                                   | 항목 왼쪽 2px lightgray 선, 0.86rem. 지나온 제목 `--darkgray`, **지금 읽는 위치**(in-view가 붙은 마지막 항목) = 왼쪽 선·글자 `--secondary` semibold                                                                                                                 |
 | 그래프 상자                            | 1px lightgray, radius 8px, 배경 `color-mix(--lightgray 15%)`                                                                                                                                                                                                        |
 | 모바일 헤더                            | 아래 1px lightgray 구분선, padding-bottom .75rem                                                                                                                                                                                                                    |
+
+### 7.11 카드 · 칩 · 목록 행 (PR 14)
+
+- **`@mixin chip`** (태그 칩 공통): padding .12rem .5rem, 1px `color-mix(--secondary 18%)` 테두리, radius `--radius-chip`(6px), 배경 `--highlight`, 글자 `--secondary` .78rem 500, `#` 접두 opacity .55. hover·focus: 테두리 `color-mix(--secondary 55%)`, 배경 `color-mix(--secondary 12%, --light)`. 적용: 글 목록·최근 글(`a.tag-link`), 글 상단(`a.note-properties-tag`), 첫 화면(`a.home-tag`, 한 단계 크게 .28rem .6rem .85rem). 글 수 배지 radius 4px, "연재 중" 배지 `--radius-chip`.
+- **`@mixin lift-card`** (링크 카드 공통): 1px lightgray, radius `--radius-card`(10px), `--shadow-sm`. hover·focus: `translateY(-2px)` + 테두리 `color-mix(--secondary 45%, --lightgray)` + `--shadow-md`. `prefers-reduced-motion`이면 움직이지 않음. 적용: 첫 화면 범주 카드, 이전/다음 글 카드(hover 때 제목 `--secondary`).
+- **목록 행 `note-row`**: 제목 1.02rem semibold `--dark`, 행 hover·focus-within 때 배경 `color-mix(--lightgray 35%)`(칩의 파란 배경과 겹치지 않는 중립색) + 제목 `--secondary`, 날짜 `tabular-nums`.
+- 모바일 ☰(탐색기) 버튼: 2.1rem 정사각, radius 8px, hover `--highlight` — 오른쪽 툴바와 대칭.
