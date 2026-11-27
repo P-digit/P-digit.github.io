@@ -282,7 +282,7 @@ article {
     }
   }
 
-  // 코드 블록: 옅은 배경 + 둥근 모서리 + 오른쪽 위 언어 라벨
+  // 코드 블록: 옅은 배경 + 둥근 모서리 (언어 라벨·복사 버튼은 아래 .code-actions)
   figure[data-rehype-pretty-code-figure] {
     margin: 1.25rem 0;
   }
@@ -296,23 +296,56 @@ article {
       font-size: 0.84rem;
       line-height: 1.65;
     }
+  }
 
-    // 라벨이 긴 첫 줄과 겹치지 않게 위쪽 여백 확보
-    &[data-language]:not([data-language="plaintext"], [data-language="txt"]) > code {
-      padding-top: 1.5rem;
+  // 코드 액션 바(언어 라벨 + 복사 버튼): plugins/post-extras 가 figure 에 붙인다.
+  // 스크롤 컨테이너(pre) 밖에 있어서 코드를 가로로 넘겨도 제자리에 있다.
+  figure.has-code-lang > pre > code,
+  figure:has(> .code-actions) > pre > code {
+    padding-top: 1.9rem;
+  }
+
+  .code-actions {
+    position: absolute;
+    top: 0.35rem;
+    right: 0.45rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    z-index: 1;
+  }
+
+  .code-lang {
+    color: color-mix(in srgb, var(--darkgray) 70%, var(--light));
+    font-family: var(--codeFont);
+    font-size: 0.7rem;
+    letter-spacing: 0.02em;
+    text-transform: lowercase;
+  }
+
+  .code-copy {
+    padding: 0.1rem 0.5rem;
+    border: 1px solid var(--lightgray);
+    border-radius: 6px;
+    background-color: var(--light);
+    color: var(--darkgray);
+    font-family: var(--bodyFont);
+    font-size: 0.72rem;
+    line-height: 1.5;
+    cursor: pointer;
+    transition:
+      border-color 0.15s ease,
+      color 0.15s ease;
+
+    &:hover,
+    &:focus-visible {
+      border-color: var(--secondary);
+      color: var(--secondary);
     }
 
-    &[data-language]:not([data-language="plaintext"], [data-language="txt"])::before {
-      content: attr(data-language);
-      position: absolute;
-      top: 0.35rem;
-      right: 0.6rem;
-      color: color-mix(in srgb, var(--darkgray) 70%, var(--light));
-      font-family: var(--codeFont);
-      font-size: 0.7rem;
-      letter-spacing: 0.02em;
-      text-transform: lowercase;
-      pointer-events: none;
+    &[data-state="done"] {
+      border-color: var(--tertiary);
+      color: var(--tertiary);
     }
   }
 
@@ -350,6 +383,73 @@ article {
 
     pre > code {
       font-size: 0.8rem;
+    }
+  }
+}
+
+/* ==========================================================================
+   이전/다음 글 (PR 8) — plugins/post-extras 의 PostNav, afterBody
+   같은 범주 안에서 날짜순. 카드 2개(이전 왼쪽 · 다음 오른쪽), 모바일은 세로로 쌓는다.
+   ========================================================================== */
+
+.post-nav {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin: 2.5rem 0 1rem;
+
+  a.post-nav__link {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    min-width: 0;
+    padding: 0.85rem 1rem;
+    border: 1px solid var(--lightgray);
+    border-radius: 10px;
+    background-color: var(--light);
+    font-weight: $normalWeight;
+    text-decoration: none;
+    transition:
+      border-color 0.15s ease,
+      background-color 0.15s ease;
+
+    &:hover,
+    &:focus-visible {
+      border-color: var(--secondary);
+      background-color: color-mix(in srgb, var(--secondary) 4%, var(--light));
+    }
+  }
+
+  a.post-nav__link--next {
+    grid-column: 2;
+    text-align: right;
+  }
+
+  .post-nav__dir {
+    color: color-mix(in srgb, var(--darkgray) 75%, var(--light));
+    font-size: 0.8rem;
+  }
+
+  .post-nav__title {
+    color: var(--dark);
+    font-size: 0.95rem;
+    font-weight: $semiBoldWeight;
+    line-height: 1.45;
+    word-break: keep-all;
+    overflow-wrap: break-word;
+  }
+}
+
+@media all and ($mobile) {
+  .post-nav {
+    grid-template-columns: minmax(0, 1fr);
+
+    .post-nav__spacer {
+      display: none;
+    }
+
+    a.post-nav__link--next {
+      grid-column: auto;
     }
   }
 }

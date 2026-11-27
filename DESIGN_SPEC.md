@@ -71,20 +71,22 @@ Quartz는 아래 토큰을 CSS 변수(`var(--light)` 등)로 노출한다. 새 �
 
 ## 5. 주요 컴포넌트
 
-| 컴포넌트                 | 플러그인                                  | 위치                                         | 비고                                      |
-| ------------------------ | ----------------------------------------- | -------------------------------------------- | ----------------------------------------- |
-| 사이트 제목              | page-title                                | left                                         |                                           |
-| 검색                     | search                                    | left/toolbar                                 | 전체 텍스트 검색 + 미리보기               |
-| 다크모드 / 리더모드      | darkmode / reader-mode                    | left/toolbar                                 |                                           |
-| 탐색기                   | explorer                                  | left                                         | 폴더 `notes`                              |
-| 브레드크럼               | breadcrumbs                               | beforeBody                                   | 홈 제외                                   |
-| 글 제목·메타             | article-title / content-meta              | beforeBody                                   | 날짜 + 읽기 시간                          |
-| 노트 속성                | note-properties                           | beforeBody                                   | description·tags 표시 (aliases는 숨김)    |
-| 그래프 / 목차 / 백링크   | graph / table-of-contents / backlinks     | right                                        |                                           |
-| 글 목록                  | folder-page / tag-page                    | 본문                                         | 제목 → 날짜 → 태그 칩 세로 스택 (PR 2)    |
-| 최근 글                  | recent-notes                              | afterBody (`condition: is-index`, 첫 화면만) | 전 범주 5개, 제목 · 날짜 · 태그 칩        |
-| 홈 hero / 카드 / 태그 칩 | `content/index.md` 마크업 + `custom.scss` | 첫 화면 본문                                 | `.home-hero`, `.home-cards`, `.home-tags` |
-| 콜아웃                   | obsidian-flavored-markdown                | 본문                                         | 노션 토글 → 접히는 콜아웃                 |
+| 컴포넌트                 | 플러그인                                     | 위치                                         | 비고                                      |
+| ------------------------ | -------------------------------------------- | -------------------------------------------- | ----------------------------------------- |
+| 사이트 제목              | page-title                                   | left                                         |                                           |
+| 검색                     | search                                       | left/toolbar                                 | 전체 텍스트 검색 + 미리보기               |
+| 다크모드 / 리더모드      | darkmode / reader-mode                       | left/toolbar                                 |                                           |
+| 탐색기                   | explorer                                     | left                                         | 폴더 `notes`                              |
+| 브레드크럼               | breadcrumbs                                  | beforeBody                                   | 홈 제외                                   |
+| 글 제목·메타             | article-title / content-meta                 | beforeBody                                   | 날짜 + 읽기 시간                          |
+| 노트 속성                | note-properties                              | beforeBody                                   | description·tags 표시 (aliases는 숨김)    |
+| 그래프 / 목차 / 백링크   | graph / table-of-contents / backlinks        | right                                        |                                           |
+| 글 목록                  | folder-page / tag-page                       | 본문                                         | 제목 → 날짜 → 태그 칩 세로 스택 (PR 2)    |
+| 최근 글                  | recent-notes                                 | afterBody (`condition: is-index`, 첫 화면만) | 전 범주 5개, 제목 · 날짜 · 태그 칩        |
+| 홈 hero / 카드 / 태그 칩 | `content/index.md` 마크업 + `custom.scss`    | 첫 화면 본문                                 | `.home-hero`, `.home-cards`, `.home-tags` |
+| 콜아웃                   | obsidian-flavored-markdown                   | 본문                                         | 노션 토글 → 접히는 콜아웃                 |
+| 코드 복사 · 언어 라벨    | ./plugins/post-extras (transformer 스크립트) | 본문 코드 블록 `figure` 오른쪽 위            | `.code-actions` (§7.7)                    |
+| 이전/다음 글             | ./plugins/post-extras (`PostNav`)            | afterBody (priority 1)                       | 같은 범주 안 날짜순 (§7.7)                |
 
 ## 6. 커스터마이징 규칙
 
@@ -151,6 +153,12 @@ Quartz는 아래 토큰을 CSS 변수(`var(--light)` 등)로 노출한다. 새 �
 | 소제목       | h2 위 2.5rem(모바일 2rem)·아래 .75rem, h3 위 1.75rem·아래 .5rem                                                                                                                                                                                                                                                       |
 | 인용문       | 테두리 `color-mix(--secondary 55%)`, 글자 `--darkgray`                                                                                                                                                                                                                                                                |
 | 표           | `.table-container`에 1px lightgray 테두리·radius 8px(들여쓰기 없음), table 100%, 0.92rem(모바일 .86rem), 셀 padding .55rem .8rem·위 정렬·행간 1.55, th 배경 `color-mix(--lightgray 45%)`·semibold·nowrap, 행 hover. 모바일 td `overflow-wrap: anywhere`(긴 경로 때문). 그래도 넘치는 표는 컨테이너 안에서 가로 스크롤 |
-| 코드 블록    | 배경 `color-mix(--lightgray 30%, --light)`, radius 8px, .84rem(모바일 .8rem)·행간 1.65, 오른쪽 위 언어 라벨(`pre[data-language]::before`, plaintext·txt 제외, 라벨 있으면 위 padding 1.5rem)                                                                                                                          |
+| 코드 블록    | 배경 `color-mix(--lightgray 30%, --light)`, radius 8px, .84rem(모바일 .8rem)·행간 1.65. 언어 라벨·복사 버튼은 PR 8에서 `figure` 기준 `.code-actions`로 옮김(§7.7)                                                                                                                                                     |
 | 인라인 코드  | 배경 `color-mix(--lightgray 60%)`, padding .08rem .35rem                                                                                                                                                                                                                                                              |
 | 콜아웃       | radius 8px (카드와 통일)                                                                                                                                                                                                                                                                                              |
+
+### 7.7 코드 복사 버튼 · 이전/다음 글 (PR 8, `plugins/post-extras`)
+
+- **코드 액션 바** `.code-actions`: 스크립트가 `nav`·`render` 때마다 `article figure[data-rehype-pretty-code-figure]`에 한 번만 붙인다. `figure` 기준 absolute(오른쪽 위)라서 `pre`를 가로로 스크롤해도 고정된다. 언어 라벨 `.code-lang`(plaintext·txt·text 제외, 있으면 `figure.has-code-lang`) + 버튼 `.code-copy`("복사" → "복사됨"/"실패" 1.6초, `aria-label="코드 복사"`). 라벨 있는 블록은 code 위 padding 1.9rem.
+- 복사 텍스트는 `[data-line]` 줄들의 텍스트를 줄바꿈으로 합친다(줄 번호 제외). clipboard API가 없으면 `textarea` + `execCommand` 폴백.
+- **이전/다음 글** `.post-nav`: 같은 폴더(범주) 글만, `index`·태그 제외, `frontmatter.date` 오름차순(같으면 슬러그 숫자 인식 비교). 카드 2열(이전 왼쪽 · 다음 오른쪽 정렬, 이전이 없으면 빈 칸으로 다음을 오른쪽에 유지), 모바일 1열. 카드 테두리·hover는 §7.1 카드 규칙.

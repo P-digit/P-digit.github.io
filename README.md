@@ -15,13 +15,13 @@ Quartz 빌드 → GitHub Pages 배포
 
 ## 범주
 
-| 범주 | 주소 | 노션 `카테고리` | 내용 |
-| --- | --- | --- | --- |
-| 로보틱스 | `/robotics/` | 로보틱스 | NVIDIA AI Campus 로보틱스 과정(Isaac Sim · ROS 2 · Isaac Lab) 일차별 노트 등 |
-| 알고리즘 | `/algorithm/` | 알고리즘 | 문제 풀이 · 자료구조 |
-| 임베디드 | `/embedded/` | 임베디드 | MCU · 펌웨어 · 센서 · 통신 |
-| 개발 | `/dev/` | 개발 | 웹 · 도구 · 환경 설정 등 그 밖의 개발 글 |
-| 회고 | `/retro/` | 회고 | 돌아보기 · 생각 정리 |
+| 범주     | 주소          | 노션 `카테고리` | 내용                                                                         |
+| -------- | ------------- | --------------- | ---------------------------------------------------------------------------- |
+| 로보틱스 | `/robotics/`  | 로보틱스        | NVIDIA AI Campus 로보틱스 과정(Isaac Sim · ROS 2 · Isaac Lab) 일차별 노트 등 |
+| 알고리즘 | `/algorithm/` | 알고리즘        | 문제 풀이 · 자료구조                                                         |
+| 임베디드 | `/embedded/`  | 임베디드        | MCU · 펌웨어 · 센서 · 통신                                                   |
+| 개발     | `/dev/`       | 개발            | 웹 · 도구 · 환경 설정 등 그 밖의 개발 글                                     |
+| 회고     | `/retro/`     | 회고            | 돌아보기 · 생각 정리                                                         |
 
 - `카테고리`를 비워 두면 `일차`·`강의명`이 있는 강의 노트는 **로보틱스**, 나머지는 **개발**로 올라갑니다.
 - 범주를 넘나드는 주제는 노션 `키워드`·`세션`(→ 블로그 태그)으로 묶습니다.
@@ -30,7 +30,7 @@ Quartz 빌드 → GitHub Pages 배포
 
 ### 1. 노션 통합(API 토큰)
 
-1. https://www.notion.so/profile/integrations → **새 통합** → 유형 *내부*
+1. https://www.notion.so/profile/integrations → **새 통합** → 유형 _내부_
 2. 기능은 **콘텐츠 읽기**만 켜기
 3. **내부 통합 시크릿**(`ntn_...`) 복사
 4. '학습 기록' DB가 들어 있는 노션 페이지(지금은 `NVIDIA AI Campus 로보틱스 학습`) → `•••` → **연결** → 방금 만든 통합 추가
@@ -45,13 +45,13 @@ Quartz 빌드 → GitHub Pages 배포
 
 ### 3. 첫 배포
 
-노션에서 글 하나에 **공개** 체크 → **Actions** 탭 → *노션 동기화 → Quartz 배포* → **Run workflow** → 2~3분 뒤 사이트 확인.
+노션에서 글 하나에 **공개** 체크 → **Actions** 탭 → _노션 동기화 → Quartz 배포_ → **Run workflow** → 2~3분 뒤 사이트 확인.
 
 시크릿이 없으면 노션 동기화는 건너뛰고 블로그만 빌드합니다.
 
 ## 평소 사용법
 
-- 노션에서 쓰고 **카테고리** 선택 + **공개** 체크 → 3시간 안에 반영. 바로 올리려면 Actions에서 *Run workflow*.
+- 노션에서 쓰고 **카테고리** 선택 + **공개** 체크 → 3시간 안에 반영. 바로 올리려면 Actions에서 _Run workflow_.
 - 공개 체크를 끄면 다음 동기화 때 블로그에서도 내려갑니다(스크립트가 만든 글만 지움).
 - 주소는 `/<범주>/<슬러그>`. 바꾸고 싶으면 노션 **슬러그**에 영문을 적습니다. 비우면 `날짜-제목`.
 - 카테고리나 슬러그를 바꿔 주소가 달라지면, 옛 주소는 새 주소로 자동 리다이렉트됩니다(옛 경로를 `aliases`로 남김). 예전 `/notes/…` 주소도 `/robotics/…`로 넘어갑니다.
@@ -60,17 +60,18 @@ Quartz 빌드 → GitHub Pages 배포
 
 ## 파일 구성
 
-| 파일 | 역할 |
-| --- | --- |
-| `quartz.config.yaml` | 사이트 설정 (제목, `ko-KR`, `baseUrl: p-digit.github.io`, Noto Sans KR 글꼴) |
-| `scripts/notion-sync.mjs` | 노션 → 마크다운 변환 (추가 패키지 없음). 노션 속성 이름이 바뀌면 위쪽 `PROPS`, 범주는 `CATEGORIES`만 수정 |
-| `.notion-sync/manifest.json` | 동기화 기록 (노션 페이지 ↔ 파일, 옛 주소 aliases) |
-| `.github/workflows/deploy.yml` | 동기화 + 빌드 + 배포 |
-| `content/index.md` | 첫 화면 (소개 · 범주 카드 · 태그 칩 · 최근 글) — 손으로 관리 |
-| `content/<범주>/index.md` | 범주 소개 페이지 — 손으로 관리 |
-| `content/<범주>/*.md` | 노션에서 동기화된 글 — **직접 고치지 말 것**(다음 동기화가 덮어씀) |
-| `quartz/styles/custom.scss` | 블로그 커스텀 스타일 (Quartz 기본 스타일 파일은 건드리지 않음) |
-| `DESIGN_SPEC.md` · `PROGRESS.md` | 디자인 규칙 · 진행 현황과 백로그 |
+| 파일                             | 역할                                                                                                      |
+| -------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `quartz.config.yaml`             | 사이트 설정 (제목, `ko-KR`, `baseUrl: p-digit.github.io`, Noto Sans KR 글꼴)                              |
+| `scripts/notion-sync.mjs`        | 노션 → 마크다운 변환 (추가 패키지 없음). 노션 속성 이름이 바뀌면 위쪽 `PROPS`, 범주는 `CATEGORIES`만 수정 |
+| `.notion-sync/manifest.json`     | 동기화 기록 (노션 페이지 ↔ 파일, 옛 주소 aliases)                                                         |
+| `.github/workflows/deploy.yml`   | 동기화 + 빌드 + 배포                                                                                      |
+| `content/index.md`               | 첫 화면 (소개 · 범주 카드 · 태그 칩 · 최근 글) — 손으로 관리                                              |
+| `content/<범주>/index.md`        | 범주 소개 페이지 — 손으로 관리                                                                            |
+| `content/<범주>/*.md`            | 노션에서 동기화된 글 — **직접 고치지 말 것**(다음 동기화가 덮어씀)                                        |
+| `plugins/post-extras/`           | 블로그 전용 로컬 플러그인: 코드 복사 버튼 + 같은 범주 이전/다음 글. 빌드 없는 JS를 `dist/`에 직접 작성    |
+| `quartz/styles/custom.scss`      | 블로그 커스텀 스타일 (Quartz 기본 스타일 파일은 건드리지 않음)                                            |
+| `DESIGN_SPEC.md` · `PROGRESS.md` | 디자인 규칙 · 진행 현황과 백로그                                                                          |
 
 ### 범주 추가하기
 
@@ -93,11 +94,11 @@ npx prettier --check quartz/styles quartz.config.yaml   # 스타일·설정 포�
 
 ## 문제 해결
 
-| 증상 | 해결 |
-| --- | --- |
-| `Notion API ... 404 object_not_found` | 노션 페이지에 통합을 연결하지 않았거나 DB ID가 틀림 |
-| `Notion API ... 400` (공개 속성) | DB에 `공개` 체크박스가 없음. 이름이 다르면 워크플로에 `PUBLISH_PROPERTY` 지정 |
-| 동기화 로그에 `모르는 카테고리 "…"` | 노션에 새 선택지를 만들고 `CATEGORIES`에 안 넣음 → 글은 `dev`로 감. 위 '범주 추가하기' 참고 |
-| 글이 엉뚱한 범주에 올라감 | 노션 `카테고리`가 비어 있음(강의 노트면 로보틱스, 아니면 개발로 감) → 카테고리 지정 |
-| 커밋 단계 `git push` 403 | Settings → Actions → General → Workflow permissions를 Read and write로 |
-| `github-pages` 환경 보호 규칙 오류 | Settings → Environments에서 기존 github-pages 환경 삭제 후 다시 실행 |
+| 증상                                  | 해결                                                                                        |
+| ------------------------------------- | ------------------------------------------------------------------------------------------- |
+| `Notion API ... 404 object_not_found` | 노션 페이지에 통합을 연결하지 않았거나 DB ID가 틀림                                         |
+| `Notion API ... 400` (공개 속성)      | DB에 `공개` 체크박스가 없음. 이름이 다르면 워크플로에 `PUBLISH_PROPERTY` 지정               |
+| 동기화 로그에 `모르는 카테고리 "…"`   | 노션에 새 선택지를 만들고 `CATEGORIES`에 안 넣음 → 글은 `dev`로 감. 위 '범주 추가하기' 참고 |
+| 글이 엉뚱한 범주에 올라감             | 노션 `카테고리`가 비어 있음(강의 노트면 로보틱스, 아니면 개발로 감) → 카테고리 지정         |
+| 커밋 단계 `git push` 403              | Settings → Actions → General → Workflow permissions를 Read and write로                      |
+| `github-pages` 환경 보호 규칙 오류    | Settings → Environments에서 기존 github-pages 환경 삭제 후 다시 실행                        |

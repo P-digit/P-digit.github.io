@@ -1,0 +1,41 @@
+{
+  "name": "post-extras",
+  "version": "1.0.0",
+  "private": true,
+  "description": "P-digit 블로그 전용: 코드 블록 복사 버튼 + 같은 범주 안 이전/다음 글 내비게이션 — 빌드 단계 없이 dist/에 직접 작성한 플레인 ESM",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./components": {
+      "types": "./dist/components/index.d.ts",
+      "import": "./dist/components/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "peerDependencies": {
+    "preact": "^10.0.0"
+  },
+  "quartz": {
+    "name": "post-extras",
+    "displayName": "Post extras",
+    "category": [
+      "transformer",
+      "component"
+    ],
+    "quartzVersion": ">=5.2.0",
+    "defaultOrder": 50,
+    "components": {
+      "PostNav": {
+        "displayName": "이전/다음 글",
+        "description": "같은 범주(폴더) 안에서 날짜순 이전/다음 글 링크",
+        "defaultPosition": "afterBody",
+        "defaultPriority": 1
+      }
+    }
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts"
+}
