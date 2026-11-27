@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs"
 import path from "node:path"
 
 // P-digit 블로그 전용 로컬 플러그인 (빌드 단계 없는 플레인 ESM)
-// - transformer: 코드 블록 복사 버튼 · 영문 UI 라벨 한국어화 · 태그 표시 이름 스크립트와
+// - transformer: 코드 블록 복사 버튼 · 영문 UI 라벨 한국어화 · 태그 표시 이름 · 모션 스크립트와
 //   외부 스타일시트(웹 글꼴, stylesheets 옵션)를 모든 페이지에 넣는다
 // - component: PostNav (dist/components/index.js)
 // 스타일은 quartz/styles/custom.scss 에 있다 (.code-actions, .post-nav)
@@ -153,6 +153,93 @@ const tagLabelScript = (labels) => `
 })()
 `
 
+// 모션 · 동적 효과 (PR 17). 모양은 custom.scss "모션" 절.
+// - 페이지 등장: nav 마다 .center 에 page-enter 클래스를 다시 붙여 CSS 등장 애니메이션을 재생
+//   (SPA 가 DOM 을 비교해 고치므로 CSS 만으로는 이동 때 다시 돌지 않는다)
+// - 읽기 진행 막대 · 맨 위로 버튼: 글 페이지에서만. body 비교 때 지워질 수 있어 nav 마다 다시 확인
+// - 테마 전환: themechange 때 잠깐 색 전환을 켠다
+// 움직임 줄이기(prefers-reduced-motion)면 등장·전환 애니메이션은 CSS 에서 꺼지고, 스크롤은 즉시 이동
+const motionScript = `
+(() => {
+  const reduce = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  const isArticle = () => {
+    const slug = document.body?.dataset.slug ?? ""
+    return slug !== "" && slug !== "index" && slug !== "404" && !slug.endsWith("/index") && !slug.startsWith("tags/")
+  }
+
+  function replayEnter() {
+    const center = document.querySelector("#quartz-body > .center")
+    if (!center) return
+    center.classList.remove("page-enter")
+    void center.offsetWidth // 클래스를 다시 붙여도 애니메이션이 처음부터 돌게
+    center.classList.add("page-enter")
+  }
+
+  function ensure(id, make) {
+    let el = document.getElementById(id)
+    if (!el) {
+      el = make()
+      el.id = id
+      document.body.appendChild(el)
+    }
+    return el
+  }
+
+  let ticking = false
+  function onScroll() {
+    if (ticking) return
+    ticking = true
+    requestAnimationFrame(() => {
+      ticking = false
+      const doc = document.documentElement
+      const max = doc.scrollHeight - window.innerHeight
+      const bar = document.getElementById("reading-progress")
+      if (bar) bar.style.transform = "scaleX(" + (max > 0 ? Math.min(1, window.scrollY / max) : 0) + ")"
+      const top = document.getElementById("back-to-top")
+      if (top) top.toggleAttribute("data-visible", window.scrollY > 600)
+    })
+  }
+
+  function setup() {
+    replayEnter()
+    const article = isArticle()
+    const bar = ensure("reading-progress", () => {
+      const el = document.createElement("div")
+      el.className = "reading-progress"
+      el.setAttribute("aria-hidden", "true")
+      return el
+    })
+    bar.hidden = !article
+    const top = ensure("back-to-top", () => {
+      const el = document.createElement("button")
+      el.type = "button"
+      el.className = "back-to-top"
+      el.setAttribute("aria-label", "맨 위로")
+      el.title = "맨 위로"
+      el.textContent = "↑"
+      el.addEventListener("click", () =>
+        window.scrollTo({ top: 0, behavior: reduce() ? "instant" : "smooth" }),
+      )
+      return el
+    })
+    top.hidden = !article
+    onScroll()
+  }
+
+  window.addEventListener("scroll", onScroll, { passive: true })
+  window.addEventListener("resize", onScroll, { passive: true })
+  document.addEventListener("nav", setup)
+
+  document.addEventListener("themechange", () => {
+    if (reduce()) return
+    const html = document.documentElement
+    html.classList.add("theme-transition")
+    clearTimeout(window.__themeTransitionTimer)
+    window.__themeTransitionTimer = setTimeout(() => html.classList.remove("theme-transition"), 450)
+  })
+})()
+`
+
 export const plugin = (opts) => ({
   name: "PostExtras",
   // 본문은 바꾸지 않는다. Quartz가 transformer로 인식하려면 이 메서드 중 하나가 있어야 한다.
@@ -168,6 +255,7 @@ export const plugin = (opts) => ({
       js: [
         { loadTime: "afterDOMReady", contentType: "inline", script: copyScript },
         { loadTime: "afterDOMReady", contentType: "inline", script: uiLabelScript },
+        { loadTime: "afterDOMReady", contentType: "inline", script: motionScript },
         ...(Object.keys(labels).length
           ? [{ loadTime: "afterDOMReady", contentType: "inline", script: tagLabelScript(labels) }]
           : []),
