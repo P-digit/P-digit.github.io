@@ -829,47 +829,106 @@ body[data-slug="index"] {
   }
 }
 
+// 첫 화면 글 제목(h1)은 사이드바·모바일 헤더의 사이트 제목과 같아서 화면에서는 숨긴다.
+// hero 문장이 시각적 제목이 되고, h1 은 화면 읽기 프로그램·검색엔진을 위해 남긴다.
+body[data-slug="index"] .page-header .article-title {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+// hero (PR 15): 은은한 파랑→틸 그라데이션 + 오른쪽 위에서 사라지는 점 격자
 .home-hero {
-  margin: 0.5rem 0 2rem;
-  padding: 1.75rem 2rem;
-  border: 1px solid var(--lightgray);
-  border-left: 4px solid var(--secondary);
-  border-radius: 12px;
-  background-color: color-mix(in srgb, var(--secondary) 5%, var(--light));
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  margin: 0.5rem 0 2.25rem;
+  padding: 2rem 2.25rem;
+  border: 1px solid color-mix(in srgb, var(--secondary) 16%, var(--lightgray));
+  border-radius: 14px;
+  background:
+    radial-gradient(
+      120% 140% at 0% 0%,
+      color-mix(in srgb, var(--secondary) 9%, var(--light)) 0%,
+      transparent 55%
+    ),
+    radial-gradient(
+      90% 120% at 100% 100%,
+      color-mix(in srgb, var(--tertiary) 8%, var(--light)) 0%,
+      transparent 60%
+    ),
+    var(--light);
+  box-shadow: var(--shadow-sm);
   word-break: keep-all;
+
+  // 점 격자: 엔지니어링 노트 느낌, 오른쪽 위에서만 보이고 글자 쪽으로 갈수록 사라짐
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background-image: radial-gradient(
+      color-mix(in srgb, var(--secondary) 22%, transparent) 1px,
+      transparent 1.2px
+    );
+    background-size: 14px 14px;
+    -webkit-mask-image: radial-gradient(70% 90% at 100% 0%, #000 0%, transparent 70%);
+    mask-image: radial-gradient(70% 90% at 100% 0%, #000 0%, transparent 70%);
+    pointer-events: none;
+  }
 
   p {
     margin: 0;
   }
 
   &__badge {
-    display: inline-block;
-    margin-bottom: 0.75rem !important;
-    padding: 0.15rem 0.65rem;
-    border-radius: 999px;
-    background-color: var(--highlight);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-bottom: 0.9rem !important;
+    padding: 0.18rem 0.6rem;
+    border: 1px solid color-mix(in srgb, var(--secondary) 22%, transparent);
+    border-radius: var(--radius-chip);
+    background-color: color-mix(in srgb, var(--light) 70%, transparent);
     color: var(--secondary);
-    font-size: 0.8rem;
+    font-size: 0.78rem;
     font-weight: $semiBoldWeight;
+
+    // 상태 점: "지금 기록 중"
+    &::before {
+      content: "";
+      width: 0.42rem;
+      height: 0.42rem;
+      border-radius: 50%;
+      background-color: var(--tertiary);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--tertiary) 20%, transparent);
+    }
   }
 
   &__lead {
+    max-width: 30em;
     color: var(--dark);
-    font-size: 1.2rem;
-    font-weight: $semiBoldWeight;
-    line-height: 1.5;
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    line-height: 1.4;
   }
 
   &__sub {
-    margin-top: 0.4rem !important;
-    color: var(--darkgray);
-    font-size: 0.95rem;
-    line-height: 1.6;
+    max-width: 36em;
+    margin-top: 0.65rem !important;
+    color: color-mix(in srgb, var(--darkgray) 85%, var(--light));
+    font-size: 0.97rem;
+    line-height: 1.7;
   }
 }
 
 .home-section-title {
-  margin: 0 0 0.75rem;
+  margin: 0 0 0.85rem;
   font-size: 1.12rem;
 }
 
@@ -917,7 +976,10 @@ body[data-slug="index"] {
     background-color: color-mix(in srgb, var(--secondary) 4%, var(--light));
 
     .home-card__icon {
-      font-size: 2rem;
+      width: 3rem;
+      height: 3rem;
+      background-color: color-mix(in srgb, var(--secondary) 10%, var(--light));
+      font-size: 1.6rem;
     }
 
     .home-card__title {
@@ -929,9 +991,24 @@ body[data-slug="index"] {
     }
   }
 
+  // 아이콘을 둥근 사각 칸에 담아 정렬을 맞춘다 (PR 15)
   .home-card__icon {
-    font-size: 1.6rem;
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: var(--radius-surface);
+    background-color: color-mix(in srgb, var(--lightgray) 45%, var(--light));
+    font-size: 1.3rem;
     line-height: 1;
+    transition: background-color 0.15s ease;
+  }
+
+  a.home-card:hover .home-card__icon,
+  a.home-card:focus-visible .home-card__icon {
+    background-color: var(--highlight);
   }
 
   .home-card__badge {
@@ -1048,14 +1125,22 @@ body[data-slug="index"] {
   border-bottom: 1px solid var(--lightgray);
   transition: background-color 0.15s ease;
 
-  // hover 배경은 중립 회색(칩의 파란 배경과 겹치지 않게), 제목만 포인트 색으로
+  // hover 배경은 중립 회색(칩의 파란 배경과 겹치지 않게), 제목만 포인트 색으로.
+  // 이 행과 바로 위 행의 구분선을 숨겨 hover 면이 선에 닿지 않는 둥근 카드처럼 보이게 한다 (이슈 24)
   &:hover,
   &:focus-within {
+    border-color: transparent;
+    border-radius: var(--radius-surface);
     background-color: color-mix(in srgb, var(--lightgray) 35%, transparent);
 
     h3 a {
       color: var(--secondary);
     }
+  }
+
+  &:has(+ :hover),
+  &:has(+ :focus-within) {
+    border-bottom-color: transparent;
   }
 
   &:first-child {
@@ -1185,10 +1270,14 @@ body[data-slug="tags/index"] .page-listing {
 
 @media all and ($mobile) {
   .home-hero {
-    padding: 1.25rem;
+    padding: 1.4rem 1.25rem;
 
     &__lead {
-      font-size: 1.08rem;
+      font-size: 1.22rem;
+    }
+
+    &__sub {
+      font-size: 0.92rem;
     }
   }
 
