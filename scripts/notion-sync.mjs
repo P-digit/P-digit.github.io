@@ -5,7 +5,7 @@
 // 환경 변수
 //   NOTION_TOKEN        (필수) 노션 내부 통합 토큰
 //   NOTION_DATABASE_ID  (필수) 학습 기록 DB ID
-//   CONTENT_DIR         글을 쓸 폴더            (기본: content/notes)
+//   CONTENT_DIR         콘텐츠 루트 폴더         (기본: content) — 글은 <루트>/<카테고리 폴더>/ 에 쓴다
 //   ATTACH_DIR          이미지를 받을 폴더       (기본: content/attachments/notion)
 //   MANIFEST_PATH       동기화 기록 파일         (기본: .notion-sync/manifest.json)
 //   PUBLISH_PROPERTY    공개 체크박스 속성 이름   (기본: 공개)
@@ -19,7 +19,7 @@ const env = process.env;
 const CONFIG = {
   token: env.NOTION_TOKEN,
   databaseId: env.NOTION_DATABASE_ID,
-  contentDir: env.CONTENT_DIR || "content/notes",
+  contentDir: env.CONTENT_DIR || "content",
   attachDir: env.ATTACH_DIR || "content/attachments/notion",
   manifestPath: env.MANIFEST_PATH || ".notion-sync/manifest.json",
   publishProp: env.PUBLISH_PROPERTY || "공개",
@@ -35,6 +35,16 @@ const PROPS = {
   tags: ["키워드", "세션"], // 둘 다 태그로 합친다
   course: "강의명",
   day: "일차",
+  category: "카테고리",
+};
+
+// 노션 '카테고리' 선택지 → 블로그 폴더(URL). 폴더마다 content/<폴더>/index.md 가 있어야 한다.
+export const CATEGORIES = {
+  로보틱스: "robotics",
+  알고리즘: "algorithm",
+  임베디드: "embedded",
+  개발: "dev",
+  회고: "retro",
 };
 
 // ───────────────────────── 노션 API ─────────────────────────
@@ -322,7 +332,7 @@ function assetPath(b, v, ctx, fallbackExt) {
 
 const yamlStr = (s) => JSON.stringify(String(s)); // JSON 문자열은 유효한 YAML
 
-export function frontmatter(page) {
+export function frontmatter(page, aliases = []) {
   const title = readProp(page, PROPS.title) || "제목 없음";
   const date = readProp(page, PROPS.date) || page.created_time?.slice(0, 10);
   const summary = readProp(page, PROPS.summary);
@@ -336,6 +346,8 @@ export function frontmatter(page) {
   if (date) lines.push(`date: ${date}`);
   if (summary) lines.push(`description: ${yamlStr(summary)}`);
   if (tags.length) lines.push("tags:", ...tags.map((t) => `  - ${yamlStr(t)}`));
+  // 예전 주소 → 지금 주소 리다이렉트 (카테고리·슬러그가 바뀌어도 옛 링크가 살아 있게)
+  if (aliases.length) lines.push("aliases:", ...aliases.map((a) => `  - ${yamlStr(a)}`));
   lines.push(`notion_id: ${page.id}`, "---");
   return lines.join("\n");
 }
@@ -345,6 +357,15 @@ export function pageHeader(page) {
   const day = readProp(page, PROPS.day);
   const meta = [day != null ? `${day}일차` : null, course].filter(Boolean).join(" · ");
   return meta ? `> ${meta}` : "";
+}
+
+// 카테고리가 비어 있으면: 강의 노트(일차·강의명이 있음)는 로보틱스, 나머지는 개발
+export function categoryFolder(page) {
+  const name = readProp(page, PROPS.category);
+  if (name && CATEGORIES[name]) return CATEGORIES[name];
+  if (name) console.warn(`  ! 모르는 카테고리 "${name}" → dev 폴더에 둔다 (CATEGORIES에 추가 필요)`);
+  const isLecture = readProp(page, PROPS.day) != null || readProp(page, PROPS.course);
+  return isLecture ? CATEGORIES["로보틱스"] : CATEGORIES["개발"];
 }
 
 export function baseSlug(page) {
@@ -377,9 +398,6 @@ export async function main() {
     ? JSON.parse(await fs.readFile(CONFIG.manifestPath, "utf8"))
     : { pages: {} };
 
-  // 글 폴더에서 첨부 폴더까지의 상대 경로 (예: ../attachments/notion)
-  const assetBase = path.relative(CONFIG.contentDir, CONFIG.attachDir).split(path.sep).join("/");
-
   const pages = await queryPublishedPages();
   console.log(`공개 페이지 ${pages.length}개`);
 
@@ -388,15 +406,31 @@ export async function main() {
   const usedAssets = new Set();
 
   for (const page of pages) {
+    const folder = categoryFolder(page);
     let slug = baseSlug(page);
-    if (usedSlugs.has(slug)) slug = `${slug}-${page.id.slice(0, 8)}`;
-    usedSlugs.add(slug);
+    // index 는 카테고리 소개 페이지 자리라서 쓰지 않는다
+    if (slug === "index" || usedSlugs.has(`${folder}/${slug}`)) slug = `${slug}-${page.id.slice(0, 8)}`;
+    usedSlugs.add(`${folder}/${slug}`);
+    const file = `${folder}/${slug}.md`; // CONFIG.contentDir 기준 경로
+    await fs.mkdir(path.join(CONFIG.contentDir, folder), { recursive: true });
+
+    // 글 폴더에서 첨부 폴더까지의 상대 경로 (예: ../attachments/notion)
+    const assetBase = path
+      .relative(path.join(CONFIG.contentDir, folder), CONFIG.attachDir)
+      .split(path.sep)
+      .join("/");
+
+    // 파일 위치가 바뀌었으면 옛 주소를 alias 로 남긴다 (manifest 에 누적)
+    const old = manifest.pages[page.id];
+    const aliases = new Set(old?.aliases || []);
+    if (old && old.file !== file) aliases.add(old.file.replace(/\.md$/, ""));
+    aliases.delete(file.replace(/\.md$/, ""));
 
     const ctx = { assets: new Map(), assetBase };
     const blocks = await getChildren(page.id);
     const body = blocksToMarkdown(blocks, ctx);
     const header = pageHeader(page);
-    const md = [frontmatter(page), header, body].filter(Boolean).join("\n\n") + "\n";
+    const md = [frontmatter(page, [...aliases]), header, body].filter(Boolean).join("\n\n") + "\n";
 
     for (const { url, filename } of ctx.assets.values()) {
       usedAssets.add(filename);
@@ -404,11 +438,13 @@ export async function main() {
       if (!(await exists(dest))) await download(url, dest);
     }
 
-    const file = `${slug}.md`;
-    const old = manifest.pages[page.id];
     if (old && old.file !== file) await fs.rm(path.join(CONFIG.contentDir, old.file), { force: true });
     await fs.writeFile(path.join(CONFIG.contentDir, file), md);
-    next.pages[page.id] = { file, assets: [...ctx.assets.values()].map((a) => a.filename) };
+    next.pages[page.id] = {
+      file,
+      ...(aliases.size ? { aliases: [...aliases] } : {}),
+      assets: [...ctx.assets.values()].map((a) => a.filename),
+    };
     console.log(`  ✓ ${file}`);
   }
 

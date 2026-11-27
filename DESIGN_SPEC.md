@@ -5,9 +5,24 @@
 
 ## 1. 사이트 성격
 
-- **이름:** P-digit 개발 기록 (`pageTitle`) / 첫 화면 제목 "로보틱스 학습 기록"
-- **내용:** NVIDIA AI Campus 로보틱스 과정(Isaac Sim · ROS 2 · Isaac Lab) 일차별 학습 노트. 한국어 장문 + 표 + 코드 블록이 많다.
-- **독자 경험 목표:** 일차 순서대로 따라 읽기 쉽고, 태그(주제)로 되찾기 쉬우며, 긴 글을 모바일에서도 편하게 읽는 것.
+- **이름:** P-digit 개발 기록 (`pageTitle`) / 첫 화면 제목 "로보틱스 학습 기록"(범주 허브 PR에서 바꿀 예정)
+- **내용:** 여러 범주를 다루는 개인 개발 블로그(2026-11-27 확장 결정). 지금 올라온 글은 NVIDIA AI Campus 로보틱스 과정(Isaac Sim · ROS 2 · Isaac Lab) 일차별 노트뿐이다. 한국어 장문 + 표 + 코드 블록이 많다.
+- **독자 경험 목표:** 범주로 먼저 고르고, 범주 안에서는 순서대로 따라 읽기 쉽고, 태그(주제)로 범주를 넘어 되찾기 쉬우며, 긴 글을 모바일에서도 편하게 읽는 것.
+
+### 1.1 정보 구조 (범주 = 폴더 = URL)
+
+| 범주     | 폴더 / URL    | 노션 `카테고리` | 비고                                                  |
+| -------- | ------------- | --------------- | ----------------------------------------------------- |
+| 로보틱스 | `/robotics/`  | 로보틱스        | DLI 과정 노트. 옛 `/notes/…` 주소가 여기로 리다이렉트 |
+| 알고리즘 | `/algorithm/` | 알고리즘        | 문제 풀이 · 자료구조                                  |
+| 임베디드 | `/embedded/`  | 임베디드        |                                                       |
+| 개발     | `/dev/`       | 개발            | 그 밖의 개발 글. 카테고리를 비우면 기본값             |
+| 회고     | `/retro/`     | 회고            |                                                       |
+
+- 범주는 폴더 하나로만 정한다(글 하나 = 범주 하나). 범주를 넘나드는 주제는 태그로 묶는다.
+- 노션 `카테고리`가 비어 있으면: `일차`·`강의명`이 있으면 로보틱스, 아니면 개발.
+- 글의 폴더나 슬러그가 바뀌면 동기화 스크립트가 옛 경로를 `aliases`로 남겨 옛 링크가 리다이렉트된다.
+- 범주 소개 `content/<폴더>/index.md`는 `title` + 본문 한두 문장. 범주 목록 페이지에서는 작성일·읽기 시간을 숨기고, 글이 없으면 "아직 올라온 글이 없습니다."를 보여 준다.
 
 ## 2. 컬러 팔레트 (`quartz.config.yaml > theme.colors`)
 
@@ -64,10 +79,10 @@ Quartz는 아래 토큰을 CSS 변수(`var(--light)` 등)로 노출한다. 새 �
 | 탐색기                   | explorer                                  | left                                         | 폴더 `notes`                              |
 | 브레드크럼               | breadcrumbs                               | beforeBody                                   | 홈 제외                                   |
 | 글 제목·메타             | article-title / content-meta              | beforeBody                                   | 날짜 + 읽기 시간                          |
-| 노트 속성                | note-properties                           | beforeBody                                   | description·tags·aliases 표시             |
+| 노트 속성                | note-properties                           | beforeBody                                   | description·tags 표시 (aliases는 숨김)    |
 | 그래프 / 목차 / 백링크   | graph / table-of-contents / backlinks     | right                                        |                                           |
 | 글 목록                  | folder-page / tag-page                    | 본문                                         | 제목 → 날짜 → 태그 칩 세로 스택 (PR 2)    |
-| 최근 학습 노트           | recent-notes                              | afterBody (`condition: is-index`, 첫 화면만) | 5개, 제목 · 날짜 · 태그 칩                |
+| 최근 글                  | recent-notes                              | afterBody (`condition: is-index`, 첫 화면만) | 전 범주 5개, 제목 · 날짜 · 태그 칩        |
 | 홈 hero / 카드 / 태그 칩 | `content/index.md` 마크업 + `custom.scss` | 첫 화면 본문                                 | `.home-hero`, `.home-cards`, `.home-tags` |
 | 콜아웃                   | obsidian-flavored-markdown                | 본문                                         | 노션 토글 → 접히는 콜아웃                 |
 

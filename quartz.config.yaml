@@ -198,10 +198,10 @@ plugins:
   - source: "@quartz-community/recent-notes"
     enabled: true
     options:
-      title: 최근 학습 노트
+      title: 최근 글
       limit: 5
       showTags: true
-      linkToMore: notes/
+      linkToMore: false
       hideTagPages: true
       hideFolderPages: true
     layout:
@@ -227,7 +227,6 @@ plugins:
       includedProperties:
         - description
         - tags
-        - aliases
       excludedProperties: []
       hidePropertiesView: false
     order: 5
