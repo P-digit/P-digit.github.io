@@ -241,7 +241,7 @@
 | 차례 등장      | 첫 화면 카드·태그 칩·최근 글 행·목록 행 1~12번째를 .08s + i×.04s 지연                                                                                                                                                                                |
 | 상태 점 펄스   | hero 배지 점의 틸 링 3px ↔ 6px 투명, 3.2s 무한                                                                                                                                                                                                       |
 | 읽기 진행 막대 | 글 페이지만, 화면 맨 위 2px, `linear-gradient(--secondary → --tertiary)`, 스크롤 비율로 `scaleX` (rAF)                                                                                                                                               |
-| 맨 위로 버튼   | 글 페이지만, 600px 넘게 내리면 오른쪽 아래 2.6rem 원형(반투명 흐림, `--shadow-md`), `aria-label="맨 위로"`                                                                                                                                           |
+| 맨 위로 버튼   | 글 페이지만, 600px 넘게 내리면 오른쪽 아래 2.6rem 원형(반투명 흐림, `--shadow-md`), `aria-label="맨 위로"`. 화살표는 인라인 SVG(1.1rem, hover 때 2px 위로), 누를 때 scale(.94) (PR 18)                                                               |
 | 테마 전환      | `themechange` 때만 450ms 동안 배경·테두리·글자색 .35s 전환                                                                                                                                                                                           |
 | 복사 완료      | 복사 버튼 `pd-pop`(scale 1.08) .28s                                                                                                                                                                                                                  |
 
