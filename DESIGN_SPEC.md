@@ -132,3 +132,11 @@ Quartz는 아래 토큰을 CSS 변수(`var(--light)` 등)로 노출한다. 새 �
 - 모바일(≤800px) 헤더: `.sidebar.left` gap 0.25rem. 사이트 제목 `.page-title`은 `flex: 1 1 auto; min-width: 0`, 1.25rem, 링크는 `nowrap` + `ellipsis`(base.scss의 `overflow-wrap: anywhere`를 `normal`로 해제). 데스크톱 제목 크기는 그대로.
 - 모바일 검색 버튼: "검색" 글자를 숨긴 2rem 아이콘 버튼. 접근성 이름은 버튼의 `aria-label="검색"`.
 - 전역 줄바꿈 규칙은 §3 참고.
+
+### 7.5 글 머리 (PR 6)
+
+- 시각 순서: 브레드크럼 → 글 제목(h1) → 메타 줄(날짜 · 읽기 시간) → 요약(description) → 태그 칩 → 구분선 → 본문. 마크업 순서(브레드크럼, 제목, 속성, 메타)는 그대로 두고 `.page-header > .popover-hint`의 flex `order`로 바꾼다.
+- 브레드크럼: 0.85rem. 마지막 항목(현재 페이지)과 그 앞 구분자는 숨긴다(h1과 중복). 항목이 하나뿐이면 그대로 둔다.
+- 메타 줄: 보조 텍스트 색, 0.88rem, 구분자는 가운뎃점(`·`).
+- note-properties: 접기 헤더·키 열·테두리를 숨기고 요약은 리드 문단(`--dark`, 1.02rem, 행간 1.7, 왼쪽 선 없음 — 본문 첫 인용문과 구분), 태그는 공통 칩(§7.1). 저장된 접힘 상태 대비 `::details-content { content-visibility: visible }`.
+- 속성이 있는 글은 글 머리 아래 `1px solid var(--lightgray)` 구분선 + padding-bottom 1.25rem.
