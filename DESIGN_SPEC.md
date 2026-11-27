@@ -175,4 +175,4 @@ Quartz는 아래 토큰을 CSS 변수(`var(--light)` 등)로 노출한다. 새 �
 | 검색 아이콘 툴팁 `Search`, aria-label `Global Graph`·`breadcrumbs` | `검색`, `전체 그래프`·`현재 위치`        | `plugins/post-extras` inline 스크립트(nav·render 때 교체)                                                           |
 
 - 복사 버튼 `.code-copy`: `min-width: 4.8em` 가운데 정렬(문구가 바뀌어도 폭 고정), 실패 상태는 점선 테두리 + `--dark`(빨강 토큰 없음).
-- 아직 남은 영문: 태그 슬러그 표시(`#isaac-sim`) — Quartz가 frontmatter 단계에서 태그를 소문자 슬러그로 바꿔 원래 표기가 빌드 데이터에 없다(PROGRESS 이슈 11).
+- 태그 표시 이름(PR 10): Quartz는 태그를 소문자 슬러그(`#isaac-sim`)로 보여 준다. 노션 동기화가 `.notion-sync/tag-labels.json`(슬러그 → 노션 원래 이름, 슬러그와 이름이 다른 것만)을 만들고, `plugins/post-extras`가 빌드 때 읽어 넣은 스크립트로 `a.tag-link` 글자와 태그 페이지 제목·탭 제목만 원래 이름(`#Isaac Sim`)으로 바꾼다. 링크 주소는 슬러그 그대로.

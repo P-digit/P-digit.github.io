@@ -24,7 +24,7 @@ Quartz 빌드 → GitHub Pages 배포
 | 회고     | `/retro/`     | 회고            | 돌아보기 · 생각 정리                                                         |
 
 - `카테고리`를 비워 두면 `일차`·`강의명`이 있는 강의 노트는 **로보틱스**, 나머지는 **개발**로 올라갑니다.
-- 범주를 넘나드는 주제는 노션 `키워드`·`세션`(→ 블로그 태그)으로 묶습니다.
+- 범주를 넘나드는 주제는 노션 `키워드`·`세션`(→ 블로그 태그)으로 묶습니다. 태그 주소는 소문자 슬러그(`/tags/isaac-sim`)지만 화면에는 노션의 원래 이름(`#Isaac Sim`)으로 보입니다.
 
 ## 처음 한 번 설정
 
@@ -65,6 +65,7 @@ Quartz 빌드 → GitHub Pages 배포
 | `quartz.config.yaml`                          | 사이트 설정 (제목, `ko-KR`, `baseUrl: p-digit.github.io`, Noto Sans KR 글꼴)                              |
 | `scripts/notion-sync.mjs`                     | 노션 → 마크다운 변환 (추가 패키지 없음). 노션 속성 이름이 바뀌면 위쪽 `PROPS`, 범주는 `CATEGORIES`만 수정 |
 | `.notion-sync/manifest.json`                  | 동기화 기록 (노션 페이지 ↔ 파일, 옛 주소 aliases)                                                         |
+| `.notion-sync/tag-labels.json`                | 태그 슬러그 → 노션 원래 이름 표 (동기화가 생성, 화면의 `#isaac-sim`을 `#Isaac Sim`으로 표시)              |
 | `.github/workflows/deploy.yml`                | 동기화 + 빌드 + 배포                                                                                      |
 | `content/index.md`                            | 첫 화면 (소개 · 범주 카드 · 태그 칩 · 최근 글) — 손으로 관리                                              |
 | `content/<범주>/index.md`                     | 범주 소개 페이지 — 손으로 관리                                                                            |

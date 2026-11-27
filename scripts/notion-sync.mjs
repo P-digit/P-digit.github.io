@@ -8,6 +8,7 @@
 //   CONTENT_DIR         콘텐츠 루트 폴더         (기본: content) — 글은 <루트>/<카테고리 폴더>/ 에 쓴다
 //   ATTACH_DIR          이미지를 받을 폴더       (기본: content/attachments/notion)
 //   MANIFEST_PATH       동기화 기록 파일         (기본: .notion-sync/manifest.json)
+//   TAG_LABELS_PATH     태그 표시 이름표         (기본: .notion-sync/tag-labels.json)
 //   PUBLISH_PROPERTY    공개 체크박스 속성 이름   (기본: 공개)
 //   NOTION_VERSION      노션 API 버전           (기본: 2022-06-28)
 
@@ -22,6 +23,7 @@ const CONFIG = {
   contentDir: env.CONTENT_DIR || "content",
   attachDir: env.ATTACH_DIR || "content/attachments/notion",
   manifestPath: env.MANIFEST_PATH || ".notion-sync/manifest.json",
+  tagLabelsPath: env.TAG_LABELS_PATH || ".notion-sync/tag-labels.json",
   publishProp: env.PUBLISH_PROPERTY || "공개",
   notionVersion: env.NOTION_VERSION || "2022-06-28",
 };
@@ -332,16 +334,57 @@ function assetPath(b, v, ctx, fallbackExt) {
 
 const yamlStr = (s) => JSON.stringify(String(s)); // JSON 문자열은 유효한 YAML
 
+// 노션 키워드·세션 값 (원래 표기, 예: "Isaac Sim")
+export function tagNames(page) {
+  return [...new Set(
+    PROPS.tags.flatMap((n) => {
+      const v = readProp(page, n);
+      return Array.isArray(v) ? v : v ? [v] : [];
+    }).map((t) => t.trim()).filter(Boolean),
+  )];
+}
+
+// frontmatter 태그: 공백은 '-' (예: "Isaac-Sim")
+const tagValue = (name) => name.replace(/\s+/g, "-");
+
+// Quartz가 frontmatter 태그를 바꾸는 규칙(@quartz-community/utils slugTag)과 같게 맞춘다.
+// 블로그에는 이 슬러그(예: "isaac-sim")가 표시되므로 이름표의 키로 쓴다.
+export function quartzTagSlug(tag) {
+  return tag
+    .normalize("NFC")
+    .split("/")
+    .map((seg) =>
+      seg
+        .replace(/\s/g, "-")
+        .replace(/&/g, "-and-")
+        .replace(/%/g, "-percent")
+        .replace(/\?/g, "")
+        .replace(/#/g, "")
+        .replace(/[<>:"|*]/g, "")
+        .toLowerCase(),
+    )
+    .join("/")
+    .replace(/\/$/, "");
+}
+
+// 태그 슬러그 → 원래 이름 표 (plugins/post-extras 가 화면의 태그 표시를 바꿀 때 쓴다)
+// 슬러그와 원래 이름이 같은 태그(예: "센서")는 넣지 않는다.
+export function tagLabels(pages) {
+  const labels = {};
+  for (const page of pages) {
+    for (const name of tagNames(page)) {
+      const slug = quartzTagSlug(tagValue(name));
+      if (slug !== name && !(slug in labels)) labels[slug] = name;
+    }
+  }
+  return Object.fromEntries(Object.entries(labels).sort(([a], [b]) => a.localeCompare(b)));
+}
+
 export function frontmatter(page, aliases = []) {
   const title = readProp(page, PROPS.title) || "제목 없음";
   const date = readProp(page, PROPS.date) || page.created_time?.slice(0, 10);
   const summary = readProp(page, PROPS.summary);
-  const tags = [...new Set(
-    PROPS.tags.flatMap((n) => {
-      const v = readProp(page, n);
-      return Array.isArray(v) ? v : v ? [v] : [];
-    }).map((t) => t.trim().replace(/\s+/g, "-")),
-  )];
+  const tags = [...new Set(tagNames(page).map(tagValue))];
   const lines = ["---", `title: ${yamlStr(title)}`];
   if (date) lines.push(`date: ${date}`);
   if (summary) lines.push(`description: ${yamlStr(summary)}`);
@@ -460,6 +503,8 @@ export async function main() {
   }
 
   await fs.writeFile(CONFIG.manifestPath, JSON.stringify(next, null, 2) + "\n");
+  await fs.mkdir(path.dirname(CONFIG.tagLabelsPath), { recursive: true });
+  await fs.writeFile(CONFIG.tagLabelsPath, JSON.stringify(tagLabels(pages), null, 2) + "\n");
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
