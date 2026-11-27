@@ -7,6 +7,8 @@ tags:
   - "센서"
   - "OpenUSD"
   - "Isaac-Sim"
+aliases:
+  - "notes/2026-11-26-4일차-urdf로-carter-가져오기-센서-달기-nova-carter"
 notion_id: 42447b7c-c0d4-81a5-9ae4-d03e217a3686
 ---
 

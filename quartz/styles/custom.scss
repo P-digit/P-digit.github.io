@@ -370,6 +370,23 @@ body[data-slug="index"] .recent-notes {
   }
 }
 
+// 범주(폴더) 목록 페이지: 작성일·읽기 시간은 의미가 없다
+body[data-slug$="/index"] .content-meta {
+  display: none;
+}
+
+// 아직 글이 없는 범주: "0건의 항목" 대신 안내 문구
+.page-listing:not(:has(li.section-li)) {
+  & > p:first-child {
+    font-size: 0;
+
+    &::after {
+      content: "아직 올라온 글이 없습니다.";
+      font-size: 0.9rem;
+    }
+  }
+}
+
 // 태그 색인(/tags/)의 태그별 소제목
 body[data-slug="tags/index"] .page-listing {
   margin-bottom: 2rem;

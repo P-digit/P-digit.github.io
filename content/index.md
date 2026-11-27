@@ -9,11 +9,11 @@ title: 로보틱스 학습 기록
 </div>
 
 <nav class="home-cards" aria-label="바로가기">
-  <a href="./notes/" class="home-card internal">
+  <a href="./robotics/" class="home-card internal">
     <span class="home-card__icon" aria-hidden="true">📚</span>
     <span class="home-card__body">
-      <span class="home-card__title">전체 학습 노트</span>
-      <span class="home-card__desc">1일차부터 일차 순서대로 모아 보기</span>
+      <span class="home-card__title">로보틱스 학습 노트</span>
+      <span class="home-card__desc">DLI 과정을 일차 순서대로 모아 보기</span>
     </span>
   </a>
   <a href="./tags/isaac-sim" class="home-card internal">
