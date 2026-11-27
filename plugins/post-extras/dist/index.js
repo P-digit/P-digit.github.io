@@ -2,7 +2,8 @@ import { readFileSync } from "node:fs"
 import path from "node:path"
 
 // P-digit 블로그 전용 로컬 플러그인 (빌드 단계 없는 플레인 ESM)
-// - transformer: 코드 블록 복사 버튼 · 영문 UI 라벨 한국어화 · 태그 표시 이름 · 모션 스크립트와
+// - transformer: 첫 화면 범주 카드 글 수(renderTransforms) +
+//   코드 블록 복사 버튼 · 영문 UI 라벨 한국어화 · 태그 표시 이름 · 모션 스크립트와
 //   외부 스타일시트(웹 글꼴, stylesheets 옵션)를 모든 페이지에 넣는다
 // - component: PostNav (dist/components/index.js)
 // 스타일은 quartz/styles/custom.scss 에 있다 (.code-actions, .post-nav)
@@ -242,11 +243,59 @@ const motionScript = `
 })()
 `
 
+// ───────── 첫 화면 범주 카드 글 수 (빌드 때 본문 트리에 넣는다, PR 19) ─────────
+// content/index.md 의 <a class="home-card" href="./<폴더>/"> 카드마다 그 폴더의 글 수를
+// 제목 옆에 붙인다("4편"). 글이 없으면 "준비 중" + 카드에 home-card--empty.
+const classesOf = (node) => {
+  const c = node.properties?.className
+  return Array.isArray(c) ? c.map(String) : typeof c === "string" ? c.split(/\s+/) : []
+}
+
+function walk(node, visit) {
+  visit(node)
+  for (const child of node.children ?? []) walk(child, visit)
+}
+
+function findFirst(node, pred) {
+  let found
+  walk(node, (n) => {
+    if (!found && n.type === "element" && pred(n)) found = n
+  })
+  return found
+}
+
+const isPost = (slug, folder) =>
+  typeof slug === "string" && slug.startsWith(folder + "/") && !slug.endsWith("/index")
+
+function addCategoryCounts(root, slug, data) {
+  if (slug !== "index") return
+  const files = data?.allFiles ?? []
+  walk(root, (node) => {
+    if (node.type !== "element" || node.tagName !== "a") return
+    if (!classesOf(node).includes("home-card")) return
+    const m = String(node.properties?.href ?? "").match(/^\.\/([^/]+)\/$/)
+    if (!m) return
+    const n = files.filter((f) => isPost(f.slug, m[1])).length
+    const title = findFirst(node, (el) => classesOf(el).includes("home-card__title"))
+    if (!title || findFirst(title, (el) => classesOf(el).includes("home-card__count"))) return
+    title.children.push({
+      type: "element",
+      tagName: "span",
+      properties: { className: ["home-card__count"] },
+      children: [{ type: "text", value: n > 0 ? `${n}편` : "준비 중" }],
+    })
+    if (n === 0) node.properties.className = [...classesOf(node), "home-card--empty"]
+  })
+}
+
 export const plugin = (opts) => ({
   name: "PostExtras",
   // 본문은 바꾸지 않는다. Quartz가 transformer로 인식하려면 이 메서드 중 하나가 있어야 한다.
   htmlPlugins() {
     return []
+  },
+  renderTransforms() {
+    return { after: [addCategoryCounts] }
   },
   externalResources() {
     const labels = readTagLabels(opts?.tagLabelsFile ?? ".notion-sync/tag-labels.json")
