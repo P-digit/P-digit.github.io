@@ -38,19 +38,19 @@ Quartz는 아래 토큰을 CSS 변수(`var(--light)` 등)로 노출한다. 새 �
 
 - 제목 크기(base.scss): h1 1.75rem(글 제목 `article > h1` 2rem), h2 1.4rem, h3 1.12rem, h4~h6 1rem
 - 굵기: 본문 400, 링크·`strong` 600, 제목 700
-- 한국어 장문 규칙: `word-break: keep-all` 사용을 권장(단어 중간 줄바꿈 방지). 대신 긴 영문/경로는 `overflow-wrap: anywhere`로 넘침을 막는다.
+- 한국어 장문 규칙(PR 3에서 전역 적용): `body { word-break: keep-all; overflow-wrap: break-word }`. 어절 단위로 줄바꿈하고, 긴 영문·경로는 `break-word`로 넘침만 막는다. `anywhere`는 표 칸의 최소 폭까지 줄여 표가 찌그러지므로 본문에는 쓰지 않는다. `pre`, `code`는 `word-break: normal`.
 
 ## 4. 레이아웃 구조
 
 브레이크포인트(`quartz/styles/variables.scss`): **mobile ≤ 800px**, tablet 800–1200px, **desktop ≥ 1200px**. 사이드 패널 폭 320px, 최대 페이지 폭 1500px.
 
-| 영역            | Desktop                                                               | Mobile                                       |
-| --------------- | --------------------------------------------------------------------- | -------------------------------------------- |
-| 왼쪽 사이드바   | 사이트 제목 → [검색 · 다크모드 · 리더모드] 툴바 → 탐색기              | 상단 가로 헤더 (햄버거 탐색기 + 제목 + 툴바) |
-| beforeBody      | 브레드크럼(홈 제외) → 글 제목 → 노트 속성(Properties) → 날짜·읽기시간 | 같음                                         |
-| 본문            | `article`                                                             | 같음                                         |
-| 오른쪽 사이드바 | 그래프 뷰 → 목차(TOC) → 백링크                                        | 본문 아래로 내려감                           |
-| footer          | "Created with Quartz" + GitHub 링크                                   | 같음                                         |
+| 영역            | Desktop                                                               | Mobile                                               |
+| --------------- | --------------------------------------------------------------------- | ---------------------------------------------------- |
+| 왼쪽 사이드바   | 사이트 제목 → [검색 · 다크모드 · 리더모드] 툴바 → 탐색기              | 상단 가로 헤더 (☰ + 제목 한 줄 + 아이콘 툴바, 69px) |
+| beforeBody      | 브레드크럼(홈 제외) → 글 제목 → 노트 속성(Properties) → 날짜·읽기시간 | 같음                                                 |
+| 본문            | `article`                                                             | 같음                                                 |
+| 오른쪽 사이드바 | 그래프 뷰 → 목차(TOC) → 백링크                                        | 본문 아래로 내려감                                   |
+| footer          | "Created with Quartz" + GitHub 링크                                   | 같음                                                 |
 
 페이지 유형별 차이(`layout.byPageType`): 폴더·태그 페이지는 오른쪽 사이드바 없음, 리더 모드 버튼 제외.
 
@@ -84,14 +84,14 @@ Quartz는 아래 토큰을 CSS 변수(`var(--light)` 등)로 노출한다. 새 �
 
 ### 7.1 공통 컴포넌트 토큰 (PR 1에서 정의, 이후 PR도 재사용)
 
-| 요소                   | 규칙                                                                                                                                                               |
-| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| 카드                   | `1px solid var(--lightgray)`, radius 10px, 배경 `var(--light)`. hover/focus: `translateY(-2px)` + 테두리 `var(--secondary)` + 그림자 `color-mix(--dark 8%)`, 0.15s |
-| 강조 패널(hero)        | radius 12px, 왼쪽 4px `var(--secondary)` 보더, 배경 `color-mix(in srgb, var(--secondary) 5%, var(--light))`                                                        |
-| 칩(태그·뱃지)          | radius 999px, 배경 `var(--highlight)`, 글자 `var(--secondary)`, `#` 접두는 opacity .6, hover 시 테두리 secondary. 보조 칩은 투명 배경 + lightgray 테두리           |
-| 보조 텍스트(날짜·라벨) | `--gray`는 라이트 모드 대비가 낮아 텍스트에 쓰지 않는다 → `color-mix(in srgb, var(--darkgray) 75%, var(--light))`                                                  |
-| 링크형 블록            | `text-decoration: none` 명시, 진입 화살표 `→`(기본 `--gray`, hover `--secondary` + `translateX(3px)`)                                                              |
-| 리스트 행              | `@mixin note-row` / `note-tags` (custom.scss). 위아래 `1px solid var(--lightgray)` 구분선, 행 padding 0.85rem 0, 제목→날짜(nowrap)→태그 칩                         |
+| 요소                   | 규칙                                                                                                                                                                                         |
+| ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 카드                   | `1px solid var(--lightgray)`, radius 10px, 배경 `var(--light)`. hover/focus: `translateY(-2px)` + 테두리 `var(--secondary)` + 그림자 `color-mix(--dark 8%)`, 0.15s                           |
+| 강조 패널(hero)        | radius 12px, 왼쪽 4px `var(--secondary)` 보더, 배경 `color-mix(in srgb, var(--secondary) 5%, var(--light))`                                                                                  |
+| 칩(태그·뱃지)          | radius 999px, 배경 `var(--highlight)`, 글자 `var(--secondary)`, `#` 접두는 opacity .6, hover 시 테두리 secondary. 보조 칩은 투명 배경 + lightgray 테두리                                     |
+| 보조 텍스트(날짜·라벨) | `--gray`는 라이트 모드 대비가 낮아 텍스트에 쓰지 않는다 → `color-mix(in srgb, var(--darkgray) 75%, var(--light))`                                                                            |
+| 링크형 블록            | `text-decoration: none` 명시, 진입 화살표 `→`(기본 `--gray`, hover `--secondary` + `translateX(3px)`)                                                                                        |
+| 리스트 행              | `@mixin note-row` / `note-tags` (custom.scss). 위아래 `1px solid var(--lightgray)` 구분선, 행 padding 0.85rem 0.75rem, 제목→날짜(nowrap)→태그 칩, hover·focus-within 배경 `var(--highlight)` |
 
 ### 7.2 첫 화면 (PR 1)
 
@@ -106,5 +106,11 @@ Quartz는 아래 토큰을 CSS 변수(`var(--light)` 등)로 노출한다. 새 �
 - `.section-li > .section`은 grid 대신 **flex column + `order`**로 제목(1) → 날짜(2) → 태그(3) 순서를 만든다. 팝오버의 `grid-template-columns !important`와 충돌하지 않기 위해서다.
 - 날짜는 `white-space: nowrap`, 제목은 `word-break: keep-all` + `overflow-wrap: anywhere`.
 - 모바일(≤600px)에서도 태그 칩을 표시한다(플러그인 기본값은 숨김).
-- 행 hover / `:focus-within`: 배경 `var(--highlight)`, 좌우 padding 0.75rem.
+- 행 hover / `:focus-within`: 배경 `var(--highlight)`, 좌우 padding 0.75rem (PR 3에서 `note-row` mixin으로 옮겨 첫 화면 최근 노트에도 적용).
 - "N건의 항목" 카운트는 보조 텍스트 색 0.85rem. `/tags/` 색인은 태그 그룹 사이 2rem.
+
+### 7.4 모바일 헤더 · 전역 타이포그래피 (PR 3)
+
+- 모바일(≤800px) 헤더: `.sidebar.left` gap 0.25rem. 사이트 제목 `.page-title`은 `flex: 1 1 auto; min-width: 0`, 1.25rem, 링크는 `nowrap` + `ellipsis`(base.scss의 `overflow-wrap: anywhere`를 `normal`로 해제). 데스크톱 제목 크기는 그대로.
+- 모바일 검색 버튼: "검색" 글자를 숨긴 2rem 아이콘 버튼. 접근성 이름은 버튼의 `aria-label="검색"`.
+- 전역 줄바꿈 규칙은 §3 참고.
