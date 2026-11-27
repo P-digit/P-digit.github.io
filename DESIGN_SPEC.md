@@ -252,3 +252,8 @@
 - **범주 카드 글 수**: `plugins/post-extras`의 `renderTransforms.after`가 빌드 때 첫 화면 본문 트리에서 `a.home-card[href="./<폴더>/"]`마다 그 폴더의 글 수(`<폴더>/` 아래, `index` 제외)를 세어 제목 옆에 `span.home-card__count`("4편", 0이면 "준비 중")를 넣는다. 0편이면 카드에 `home-card--empty`(hover·focus가 아닐 때 아이콘 grayscale .35·opacity .8, 설명 옅게). 숫자는 .78rem `color-mix(--darkgray 70%)` `tabular-nums`.
 - **전체 태그 수**: 첫 화면 태그 칩 끝 링크가 "전체 태그 N개 →"(글 페이지 태그 종류 수, 표시 한도와 무관).
 - **화면 읽기 구분**(PR 20): 글 수 앞에 `.sr-only` 쉼표(", ")를 넣어 "로보틱스 연재 중, 4편"으로 읽힌다. `.sr-only`는 1px·`clip-path: inset(50%)` 유틸리티.
+
+### 7.16 목록 "더 보기" · 복사 상태 알림 (PR 21)
+
+- **더 보기**: 범주·태그 목록(`.page-listing ul.section-ul`)이 `listPageSize`(quartz.config.yaml `post-extras` 옵션, 10)보다 길면 처음 10개만 보이고, 목록 아래 `button.list-more`("더 보기 (N개 남음)", `aria-controls`)로 10개씩 더 보인다. 새로 보인 첫 글로 초점 이동, 다 보이면 버튼 제거. URL은 바뀌지 않는다. 버튼: 전체 폭, 1px 점선 `color-mix(--secondary 35%)`, `--radius-surface`, 글자 `--secondary` semibold, hover·focus 때 실선 + `--highlight`.
+- **복사 상태 알림**: 복사 버튼 `aria-label`이 상태마다 바뀌고("코드 복사" → "코드를 복사했습니다"/"코드를 복사하지 못했습니다"), 화면 밖 `#sr-status`(`role=status`, `aria-live=polite`)가 같은 문장을 읽어 준다.

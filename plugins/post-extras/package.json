@@ -37,7 +37,8 @@
     },
     "defaultOptions": {
       "tagLabelsFile": ".notion-sync/tag-labels.json",
-      "stylesheets": []
+      "stylesheets": [],
+      "listPageSize": 10
     },
     "configSchema": {
       "type": "object",
@@ -52,6 +53,10 @@
             "type": "string"
           },
           "description": "모든 페이지 <head>에 넣을 외부 스타일시트 URL (웹 글꼴 등)"
+        },
+        "listPageSize": {
+          "type": "number",
+          "description": "범주·태그 목록에서 처음 보여 줄 글 수 (넘으면 '더 보기')"
         }
       },
       "additionalProperties": false
