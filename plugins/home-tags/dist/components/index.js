@@ -38,7 +38,9 @@ const HomeTagsConstructor = (opts) => {
   const HomeTags = ({ allFiles, displayClass }) => {
     const labels = readLabels(options.tagLabelsFile)
     const name = (slug) => labels[slug] ?? slug
-    const tags = [...countTags(allFiles)]
+    const counts = countTags(allFiles)
+    const total = counts.size
+    const tags = [...counts]
       .sort(([a, ca], [b, cb]) => cb - ca || name(a).localeCompare(name(b), "ko"))
       .slice(0, options.limit)
     if (tags.length === 0) return null
@@ -56,7 +58,12 @@ const HomeTagsConstructor = (opts) => {
           h("span", { class: "home-tag__count", "aria-label": `글 ${count}개` }, String(count)),
         ),
       ),
-      h("a", { href: "./tags/", class: "home-tag home-tag--all internal" }, "전체 태그 →"),
+      // 전체 태그 수를 함께 (Gemini PR 11 제안, 이슈 21)
+      h(
+        "a",
+        { href: "./tags/", class: "home-tag home-tag--all internal" },
+        `전체 태그 ${total}개 →`,
+      ),
     )
   }
   return HomeTags

@@ -246,3 +246,8 @@
 | 복사 완료      | 복사 버튼 `pd-pop`(scale 1.08) .28s                                                                                                                                                                                                                  |
 
 - 인라인 코드: 1px `color-mix(--lightgray 90%)` 테두리 + radius 4px (PR 17, 이슈 26).
+
+### 7.15 첫 화면 숫자 정보 (PR 19)
+
+- **범주 카드 글 수**: `plugins/post-extras`의 `renderTransforms.after`가 빌드 때 첫 화면 본문 트리에서 `a.home-card[href="./<폴더>/"]`마다 그 폴더의 글 수(`<폴더>/` 아래, `index` 제외)를 세어 제목 옆에 `span.home-card__count`("4편", 0이면 "준비 중")를 넣는다. 0편이면 카드에 `home-card--empty`(hover·focus가 아닐 때 아이콘 grayscale .35·opacity .8, 설명 옅게). 숫자는 .78rem `color-mix(--darkgray 70%)` `tabular-nums`.
+- **전체 태그 수**: 첫 화면 태그 칩 끝 링크가 "전체 태그 N개 →"(글 페이지 태그 종류 수, 표시 한도와 무관).
