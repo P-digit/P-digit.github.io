@@ -134,7 +134,7 @@ code {
       flex-grow: 0;
 
       .search-button {
-        width: 2rem;
+        width: 2.1rem; // 다른 툴바 버튼과 같은 정사각형 (PR 13)
         padding: 0;
         justify-content: center;
 
@@ -593,6 +593,173 @@ footer.site-footer {
       color: var(--secondary);
       text-decoration: underline;
     }
+  }
+}
+
+/* ==========================================================================
+   내비게이션 (PR 13) — 사이드바 · 툴바 · 탐색기 · 목차 · 그래프 · 모바일 헤더
+   A안 토큰(§2): 컨트롤은 높이 2.1rem · --radius-surface, 현재 위치는 --secondary
+   ========================================================================== */
+
+$control-h: 2.1rem;
+
+// 사이트 제목: 포인트 색 대신 진한 글자로 무게감 있게
+.page-title {
+  font-weight: 800;
+
+  a {
+    color: var(--dark);
+    transition: color 0.15s ease;
+
+    &:hover {
+      color: var(--secondary);
+    }
+  }
+}
+
+// 사이드바 소제목(탐색기 · 그래프 뷰 · 목차): 작은 캡션
+:is(.explorer .title-button, .graph, .toc .toc-header) > h2,
+.graph > h3,
+.toc .toc-header > h3 {
+  margin: 0;
+  color: color-mix(in srgb, var(--darkgray) 75%, var(--light));
+  font-size: 0.78rem;
+  font-weight: $semiBoldWeight;
+  letter-spacing: 0.02em;
+}
+
+// 툴바: 검색 상자 + 아이콘 버튼을 같은 높이·모서리로
+.search .search-button {
+  height: $control-h;
+  border: 1px solid var(--lightgray);
+  border-radius: var(--radius-surface);
+  background-color: color-mix(in srgb, var(--lightgray) 22%, var(--light));
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease;
+
+  &:hover,
+  &:focus-visible {
+    border-color: color-mix(in srgb, var(--secondary) 45%, var(--lightgray));
+    background-color: var(--light);
+  }
+
+  & > p {
+    color: color-mix(in srgb, var(--darkgray) 65%, var(--light));
+    font-size: 0.88rem;
+  }
+}
+
+button.darkmode,
+button.readermode {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: $control-h;
+  height: $control-h;
+  margin: 0;
+  padding: 0;
+  border-radius: var(--radius-surface);
+  transition: background-color 0.15s ease;
+
+  &:hover,
+  &:focus-visible {
+    background-color: var(--highlight);
+  }
+
+  svg {
+    width: 1.15rem;
+    height: 1.15rem;
+  }
+}
+
+// 탐색기: 행에 여유, 현재 글은 포인트 색 알약
+.explorer .explorer-content {
+  ul li > a,
+  .folder-button,
+  .folder-container > div > a {
+    font-size: 0.9rem;
+    line-height: 1.45;
+  }
+
+  ul li > a {
+    display: block;
+    margin: 1px 0;
+    padding: 0.2rem 0.5rem;
+    border-radius: 6px;
+    color: var(--darkgray);
+    opacity: 1;
+    transition:
+      background-color 0.15s ease,
+      color 0.15s ease;
+
+    &:hover {
+      background-color: color-mix(in srgb, var(--lightgray) 45%, transparent);
+      color: var(--dark);
+    }
+
+    &.active {
+      background-color: var(--highlight);
+      color: var(--secondary);
+      font-weight: $semiBoldWeight;
+    }
+  }
+
+  .folder-container {
+    border-radius: 6px;
+
+    &:hover {
+      background-color: color-mix(in srgb, var(--lightgray) 45%, transparent);
+    }
+  }
+}
+
+// 목차: 지나온 제목은 보통 색, "지금 읽는 위치"(in-view 가 붙은 마지막 항목)는 왼쪽 선 + 포인트 색
+.toc ul.toc-content.overflow {
+  & > li > a {
+    display: block;
+    padding: 0.15rem 0 0.15rem 0.6rem;
+    border-left: 2px solid var(--lightgray);
+    color: color-mix(in srgb, var(--darkgray) 70%, var(--light));
+    font-size: 0.86rem;
+    opacity: 1;
+    transition:
+      color 0.15s ease,
+      border-color 0.15s ease;
+
+    &:hover {
+      color: var(--dark);
+    }
+
+    &.in-view {
+      color: var(--darkgray);
+      opacity: 1;
+    }
+  }
+
+  & > li:has(> a.in-view):not(:has(+ li > a.in-view)) > a {
+    border-left-color: var(--secondary);
+    color: var(--secondary);
+    font-weight: $semiBoldWeight;
+  }
+}
+
+// 그래프 상자: 표면 반경 + 옅은 배경
+.graph .graph-outer {
+  border-color: var(--lightgray);
+  border-radius: var(--radius-surface);
+  background-color: color-mix(in srgb, var(--lightgray) 15%, var(--light));
+}
+
+// 모바일 헤더: 아래 구분선으로 본문과 나눈다
+@media all and ($mobile) {
+  .page > #quartz-body > .sidebar.left {
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--lightgray);
+  }
+
+  .sidebar.left .page-title {
+    font-weight: 800;
   }
 }
 
