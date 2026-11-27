@@ -78,6 +78,12 @@ plugins:
     layout:
       position: right
       priority: 30
+  - source: "./plugins/post-extras"
+    enabled: true
+    order: 50
+    layout:
+      position: afterBody
+      priority: 1
   - source: "@quartz-community/description"
     enabled: true
     order: 70
