@@ -116,10 +116,16 @@ body[data-slug="index"] {
   }
 }
 
+.home-section-title {
+  margin: 0 0 0.75rem;
+  font-size: 1.12rem;
+}
+
+// 범주 카드: 데스크톱 2열 — 연재 중인 범주(featured)가 한 줄 전체, 나머지 4개가 2×2
 .home-cards {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
   margin-bottom: 1.5rem;
 
   // base.scss 의 a.internal (배경·패딩) 덮어쓰기
@@ -164,9 +170,39 @@ body[data-slug="index"] {
     }
   }
 
+  a.home-card--featured {
+    grid-column: 1 / -1;
+    padding: 1.25rem 1.4rem;
+    background-color: color-mix(in srgb, var(--secondary) 4%, var(--light));
+
+    .home-card__icon {
+      font-size: 2rem;
+    }
+
+    .home-card__title {
+      font-size: 1.12rem;
+    }
+
+    .home-card__desc {
+      font-size: 0.9rem;
+    }
+  }
+
   .home-card__icon {
     font-size: 1.6rem;
     line-height: 1;
+  }
+
+  .home-card__badge {
+    display: inline-block;
+    margin-left: 0.4rem;
+    padding: 0.05rem 0.5rem;
+    border-radius: 999px;
+    background-color: var(--highlight);
+    color: var(--secondary);
+    font-size: 0.72rem;
+    font-weight: $semiBoldWeight;
+    vertical-align: 0.15em;
   }
 
   .home-card__body {
@@ -408,7 +444,7 @@ body[data-slug="tags/index"] .page-listing {
 }
 
 @media all and ($tablet) {
-  .home-cards {
-    grid-template-columns: minmax(0, 1fr);
+  .home-hero {
+    padding: 1.5rem;
   }
 }
