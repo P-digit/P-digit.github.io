@@ -178,6 +178,57 @@ body[data-slug="index"] {
   }
 }
 
+// 글 목록 행 공통 스타일 — 첫 화면 recent-notes(.recent-li)와
+// 폴더·태그 페이지 글 목록(.section-li)이 같은 시각 언어를 쓴다.
+@mixin note-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    margin: 0;
+  }
+
+  a.tag-link {
+    padding: 0.1rem 0.5rem;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: $normalWeight;
+  }
+}
+
+@mixin note-row {
+  margin: 0;
+  padding: 0.85rem 0;
+  border-bottom: 1px solid var(--lightgray);
+
+  &:first-child {
+    border-top: 1px solid var(--lightgray);
+  }
+
+  h3 {
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.5;
+    word-break: keep-all;
+    overflow-wrap: anywhere;
+  }
+
+  .meta {
+    margin: 0.2rem 0 0;
+    color: color-mix(in srgb, var(--darkgray) 75%, var(--light));
+    font-size: 0.85rem;
+    white-space: nowrap;
+  }
+
+  ul.tags {
+    @include note-tags;
+  }
+}
+
 // recent-notes 플러그인 (첫 화면 afterBody)
 body[data-slug="index"] .recent-notes {
   margin-top: 1rem;
@@ -194,47 +245,73 @@ body[data-slug="index"] .recent-notes {
   }
 
   .recent-li {
+    @include note-row;
+  }
+}
+
+/* ==========================================================================
+   글 목록 — folder-page(/notes/) · tag-page(/tags/*) 의 .page-listing
+   기본 3열 그리드(날짜 8em 고정 → 두 줄 꺾임, 600px 이하 태그 숨김)를
+   제목 → 날짜 → 태그 칩 세로 스택으로 바꾼다. 그리드 대신 flex를 써서
+   팝오버의 grid-template-columns !important 규칙과도 충돌하지 않는다.
+   ========================================================================== */
+
+.page-listing {
+  & > p:first-child {
+    margin: 0 0 0.75rem;
+    color: color-mix(in srgb, var(--darkgray) 75%, var(--light));
+    font-size: 0.85rem;
+  }
+
+  ul.section-ul {
     margin: 0;
-    padding: 0.85rem 0;
-    border-bottom: 1px solid var(--lightgray);
+    padding: 0;
+    list-style: none;
+  }
 
-    &:first-child {
-      border-top: 1px solid var(--lightgray);
+  li.section-li {
+    @include note-row;
+    padding-inline: 0.75rem;
+    border-radius: 0;
+    transition: background-color 0.15s ease;
+
+    &:hover,
+    &:focus-within {
+      background-color: var(--highlight);
     }
 
-    h3 {
-      margin: 0;
-      font-size: 1rem;
-      line-height: 1.5;
-      word-break: keep-all;
-    }
-
-    .meta {
-      margin: 0.2rem 0 0;
-      color: color-mix(in srgb, var(--darkgray) 75%, var(--light));
-      font-size: 0.85rem;
-    }
-
-    ul.tags {
+    & > .section {
       display: flex;
-      flex-wrap: wrap;
-      gap: 0.35rem;
-      margin: 0.5rem 0 0;
-      padding: 0;
-      list-style: none;
+      flex-direction: column;
+      min-width: 0;
 
-      li {
-        margin: 0;
+      & > .desc {
+        order: 1;
+        min-width: 0;
       }
 
-      a.tag-link {
-        padding: 0.1rem 0.5rem;
-        border-radius: 999px;
-        font-size: 0.78rem;
-        font-weight: $normalWeight;
+      & > .meta {
+        order: 2;
+        opacity: 1;
+      }
+
+      & > ul.tags {
+        order: 3;
+        // 기본값은 600px 이하에서 태그를 숨긴다 → 모바일에서도 표시
+        display: flex;
+      }
+
+      & > .desc > h3 > a {
+        background-color: transparent;
+        padding: 0;
       }
     }
   }
+}
+
+// 태그 색인(/tags/)의 태그별 소제목
+body[data-slug="tags/index"] .page-listing {
+  margin-bottom: 2rem;
 }
 
 @media all and ($mobile) {
