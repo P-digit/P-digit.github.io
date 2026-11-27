@@ -72,6 +72,7 @@ Quartz 빌드 → GitHub Pages 배포
 | `content/<범주>/*.md`                         | 노션에서 동기화된 글 — **직접 고치지 말 것**(다음 동기화가 덮어씀)                                        |
 | `plugins/post-extras/`                        | 블로그 전용 로컬 플러그인: 코드 복사 버튼 + 같은 범주 이전/다음 글. 빌드 없는 JS를 `dist/`에 직접 작성    |
 | `plugins/post-meta/` · `plugins/site-footer/` | 한국어 날짜·"약 N분" 읽는 시간, 한국어 푸터 (플러그인 기본 문구가 영문이라 대체)                          |
+| `plugins/home-tags/`                          | 첫 화면 태그 칩: 많이 쓰인 태그를 노션 원래 이름과 글 수로 자동 표시                                      |
 | `quartz/styles/custom.scss`                   | 블로그 커스텀 스타일 (Quartz 기본 스타일 파일은 건드리지 않음)                                            |
 | `DESIGN_SPEC.md` · `PROGRESS.md`              | 디자인 규칙 · 진행 현황과 백로그                                                                          |
 

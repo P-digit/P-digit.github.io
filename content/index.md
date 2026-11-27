@@ -47,14 +47,3 @@ title: P-digit 개발 기록
     </span>
   </a>
 </nav>
-
-<div class="home-tags" aria-label="태그로 찾기">
-  <span class="home-tags__label">태그</span>
-  <a href="./tags/isaac-sim" class="home-tag internal">Isaac Sim</a>
-  <a href="./tags/ros-2" class="home-tag internal">ROS 2</a>
-  <a href="./tags/openusd" class="home-tag internal">OpenUSD</a>
-  <a href="./tags/omnigraph" class="home-tag internal">OmniGraph</a>
-  <a href="./tags/센서" class="home-tag internal">센서</a>
-  <a href="./tags/기초" class="home-tag internal">기초</a>
-  <a href="./tags/" class="home-tag home-tag--all internal">전체 태그 →</a>
-</div>

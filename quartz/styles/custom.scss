@@ -481,6 +481,12 @@ footer.site-footer {
     margin: 0;
   }
 
+  // base.scss 가 p·li 에 --darkgray 를 주므로 푸터 색을 물려받게 한다(링크의 inherit 도 이 색)
+  p,
+  li {
+    color: inherit;
+  }
+
   ul {
     display: flex;
     flex-wrap: wrap;
@@ -488,6 +494,20 @@ footer.site-footer {
     margin: 0.4rem 0 0;
     padding: 0;
     list-style: none;
+  }
+
+  // 링크는 푸터 글자색과 같게, hover·focus 때만 포인트 색 (Gemini PR 9 제안)
+  a {
+    color: inherit;
+    font-weight: $semiBoldWeight;
+    text-decoration: none;
+    transition: color 0.15s ease;
+
+    &:hover,
+    &:focus-visible {
+      color: var(--secondary);
+      text-decoration: underline;
+    }
   }
 }
 
@@ -651,12 +671,13 @@ body[data-slug="index"] {
   }
 }
 
+// 첫 화면 태그 칩 — plugins/home-tags 가 afterBody(최근 글 위)에 그린다
 .home-tags {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
+  gap: 0.4rem;
+  margin: 0.25rem 0 1rem;
 
   &__label {
     margin-right: 0.25rem;
@@ -666,7 +687,7 @@ body[data-slug="index"] {
   }
 
   a.home-tag {
-    padding: 0.3rem 0.75rem;
+    padding: 0.3rem 0.6rem;
     border: 1px solid transparent;
     border-radius: 999px;
     background-color: var(--highlight);
@@ -690,6 +711,22 @@ body[data-slug="index"] {
       border-color: var(--secondary);
       text-decoration: none;
     }
+  }
+
+  // 글 수 (plugins/home-tags): 이름 끝 숫자(예: "ROS 2")와 헷갈리지 않게 작은 배지로
+  .home-tag__count {
+    display: inline-block;
+    min-width: 1rem;
+    margin-left: 0.3rem;
+    padding: 0 0.25rem;
+    border-radius: 999px;
+    background-color: var(--light);
+    color: color-mix(in srgb, var(--secondary) 75%, var(--light));
+    font-size: 0.72rem;
+    line-height: 1.15rem;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+    vertical-align: 0.05em;
   }
 
   a.home-tag--all {

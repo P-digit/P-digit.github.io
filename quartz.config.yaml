@@ -229,6 +229,15 @@ plugins:
     layout:
       position: footer
       priority: 50
+  # 첫 화면 태그 칩 (많이 쓰인 순, 노션 원래 이름). 최근 글(priority 5) 위
+  - source: "./plugins/home-tags"
+    enabled: true
+    options:
+      limit: 12
+    layout:
+      position: afterBody
+      priority: 3
+      condition: is-index
   - source: "@quartz-community/recent-notes"
     enabled: true
     options:

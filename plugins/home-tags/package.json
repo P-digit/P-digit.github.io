@@ -1,0 +1,55 @@
+{
+  "name": "home-tags",
+  "version": "1.0.0",
+  "private": true,
+  "description": "첫 화면 태그 칩: 모든 글의 태그를 세어 많이 쓰인 순으로, 노션 원래 이름으로 표시 — 빌드 단계 없이 dist/에 직접 작성한 플레인 ESM",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./components": {
+      "types": "./dist/components/index.d.ts",
+      "import": "./dist/components/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "peerDependencies": {
+    "preact": "^10.0.0"
+  },
+  "quartz": {
+    "name": "home-tags",
+    "displayName": "첫 화면 태그 칩",
+    "category": "component",
+    "quartzVersion": ">=5.2.0",
+    "defaultOptions": {
+      "limit": 12,
+      "tagLabelsFile": ".notion-sync/tag-labels.json"
+    },
+    "configSchema": {
+      "type": "object",
+      "properties": {
+        "limit": {
+          "type": "number",
+          "description": "보여 줄 태그 수"
+        },
+        "tagLabelsFile": {
+          "type": "string",
+          "description": "태그 슬러그 → 표시 이름 JSON (사이트 루트 기준)"
+        }
+      },
+      "additionalProperties": false
+    },
+    "components": {
+      "HomeTags": {
+        "displayName": "첫 화면 태그 칩",
+        "description": "많이 쓰인 태그 칩 + 전체 태그 링크",
+        "defaultPosition": "afterBody",
+        "defaultPriority": 3
+      }
+    }
+  }
+}
