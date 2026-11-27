@@ -15,6 +15,21 @@ const copyScript = `
   const LABEL = "복사"
   const DONE = "복사됨"
   const FAIL = "실패"
+  // 상태별 아이콘 (이슈 28): 클립보드 · 체크 · 엑스. stroke 는 글자색을 따른다
+  const svg = (paths) =>
+    '<svg class="code-copy__icon" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">' +
+    paths +
+    "</svg>"
+  const ICON = {
+    idle: svg('<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/>'),
+    done: svg('<path d="M20 6 9 17l-5-5"/>'),
+    fail: svg('<path d="M18 6 6 18"/><path d="m6 6 12 12"/>'),
+  }
+  const setState = (btn, state, label) => {
+    btn.innerHTML = ICON[state] + '<span class="code-copy__label">' + label + "</span>"
+    if (state === "idle") delete btn.dataset.state
+    else btn.dataset.state = state
+  }
   const SKIP_LANGS = new Set(["plaintext", "txt", "text"])
 
   function codeText(pre) {
@@ -65,22 +80,19 @@ const copyScript = `
       const btn = document.createElement("button")
       btn.type = "button"
       btn.className = "code-copy"
-      btn.textContent = LABEL
+      setState(btn, "idle", LABEL)
       btn.setAttribute("aria-label", "코드 복사")
       let timer
       const onClick = async () => {
         try {
           await writeClipboard(codeText(pre))
-          btn.textContent = DONE
-          btn.dataset.state = "done"
+          setState(btn, "done", DONE)
         } catch {
-          btn.textContent = FAIL
-          btn.dataset.state = "fail"
+          setState(btn, "fail", FAIL)
         }
         clearTimeout(timer)
         timer = setTimeout(() => {
-          btn.textContent = LABEL
-          delete btn.dataset.state
+          setState(btn, "idle", LABEL)
         }, 1600)
       }
       btn.addEventListener("click", onClick)
@@ -282,7 +294,16 @@ function addCategoryCounts(root, slug, data) {
       type: "element",
       tagName: "span",
       properties: { className: ["home-card__count"] },
-      children: [{ type: "text", value: n > 0 ? `${n}편` : "준비 중" }],
+      children: [
+        // 화면 읽기 프로그램이 "연재 중 4편"을 이어 읽지 않게 보이지 않는 쉼표 (이슈 29)
+        {
+          type: "element",
+          tagName: "span",
+          properties: { className: ["sr-only"] },
+          children: [{ type: "text", value: ", " }],
+        },
+        { type: "text", value: n > 0 ? `${n}편` : "준비 중" },
+      ],
     })
     if (n === 0) node.properties.className = [...classesOf(node), "home-card--empty"]
   })

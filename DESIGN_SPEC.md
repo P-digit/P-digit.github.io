@@ -243,7 +243,7 @@
 | 읽기 진행 막대 | 글 페이지만, 화면 맨 위 2px, `linear-gradient(--secondary → --tertiary)`, 스크롤 비율로 `scaleX` (rAF)                                                                                                                                               |
 | 맨 위로 버튼   | 글 페이지만, 600px 넘게 내리면 오른쪽 아래 2.6rem 원형(반투명 흐림, `--shadow-md`), `aria-label="맨 위로"`. 화살표는 인라인 SVG(1.1rem, hover 때 2px 위로), 누를 때 scale(.94) (PR 18)                                                               |
 | 테마 전환      | `themechange` 때만 450ms 동안 배경·테두리·글자색 .35s 전환                                                                                                                                                                                           |
-| 복사 완료      | 복사 버튼 `pd-pop`(scale 1.08) .28s                                                                                                                                                                                                                  |
+| 복사 완료      | 복사 버튼 `pd-pop`(scale 1.08) .28s. 버튼은 [SVG 아이콘 + 글자] — 대기 클립보드 · 완료 체크 · 실패 엑스, `min-width: 7em`(상태가 바뀌어도 폭 고정) (PR 20)                                                                                           |
 
 - 인라인 코드: 1px `color-mix(--lightgray 90%)` 테두리 + radius 4px (PR 17, 이슈 26).
 
@@ -251,3 +251,4 @@
 
 - **범주 카드 글 수**: `plugins/post-extras`의 `renderTransforms.after`가 빌드 때 첫 화면 본문 트리에서 `a.home-card[href="./<폴더>/"]`마다 그 폴더의 글 수(`<폴더>/` 아래, `index` 제외)를 세어 제목 옆에 `span.home-card__count`("4편", 0이면 "준비 중")를 넣는다. 0편이면 카드에 `home-card--empty`(hover·focus가 아닐 때 아이콘 grayscale .35·opacity .8, 설명 옅게). 숫자는 .78rem `color-mix(--darkgray 70%)` `tabular-nums`.
 - **전체 태그 수**: 첫 화면 태그 칩 끝 링크가 "전체 태그 N개 →"(글 페이지 태그 종류 수, 표시 한도와 무관).
+- **화면 읽기 구분**(PR 20): 글 수 앞에 `.sr-only` 쉼표(", ")를 넣어 "로보틱스 연재 중, 4편"으로 읽힌다. `.sr-only`는 1px·`clip-path: inset(50%)` 유틸리티.
