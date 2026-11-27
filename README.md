@@ -60,18 +60,19 @@ Quartz 빌드 → GitHub Pages 배포
 
 ## 파일 구성
 
-| 파일                             | 역할                                                                                                      |
-| -------------------------------- | --------------------------------------------------------------------------------------------------------- |
-| `quartz.config.yaml`             | 사이트 설정 (제목, `ko-KR`, `baseUrl: p-digit.github.io`, Noto Sans KR 글꼴)                              |
-| `scripts/notion-sync.mjs`        | 노션 → 마크다운 변환 (추가 패키지 없음). 노션 속성 이름이 바뀌면 위쪽 `PROPS`, 범주는 `CATEGORIES`만 수정 |
-| `.notion-sync/manifest.json`     | 동기화 기록 (노션 페이지 ↔ 파일, 옛 주소 aliases)                                                         |
-| `.github/workflows/deploy.yml`   | 동기화 + 빌드 + 배포                                                                                      |
-| `content/index.md`               | 첫 화면 (소개 · 범주 카드 · 태그 칩 · 최근 글) — 손으로 관리                                              |
-| `content/<범주>/index.md`        | 범주 소개 페이지 — 손으로 관리                                                                            |
-| `content/<범주>/*.md`            | 노션에서 동기화된 글 — **직접 고치지 말 것**(다음 동기화가 덮어씀)                                        |
-| `plugins/post-extras/`           | 블로그 전용 로컬 플러그인: 코드 복사 버튼 + 같은 범주 이전/다음 글. 빌드 없는 JS를 `dist/`에 직접 작성    |
-| `quartz/styles/custom.scss`      | 블로그 커스텀 스타일 (Quartz 기본 스타일 파일은 건드리지 않음)                                            |
-| `DESIGN_SPEC.md` · `PROGRESS.md` | 디자인 규칙 · 진행 현황과 백로그                                                                          |
+| 파일                                          | 역할                                                                                                      |
+| --------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `quartz.config.yaml`                          | 사이트 설정 (제목, `ko-KR`, `baseUrl: p-digit.github.io`, Noto Sans KR 글꼴)                              |
+| `scripts/notion-sync.mjs`                     | 노션 → 마크다운 변환 (추가 패키지 없음). 노션 속성 이름이 바뀌면 위쪽 `PROPS`, 범주는 `CATEGORIES`만 수정 |
+| `.notion-sync/manifest.json`                  | 동기화 기록 (노션 페이지 ↔ 파일, 옛 주소 aliases)                                                         |
+| `.github/workflows/deploy.yml`                | 동기화 + 빌드 + 배포                                                                                      |
+| `content/index.md`                            | 첫 화면 (소개 · 범주 카드 · 태그 칩 · 최근 글) — 손으로 관리                                              |
+| `content/<범주>/index.md`                     | 범주 소개 페이지 — 손으로 관리                                                                            |
+| `content/<범주>/*.md`                         | 노션에서 동기화된 글 — **직접 고치지 말 것**(다음 동기화가 덮어씀)                                        |
+| `plugins/post-extras/`                        | 블로그 전용 로컬 플러그인: 코드 복사 버튼 + 같은 범주 이전/다음 글. 빌드 없는 JS를 `dist/`에 직접 작성    |
+| `plugins/post-meta/` · `plugins/site-footer/` | 한국어 날짜·"약 N분" 읽는 시간, 한국어 푸터 (플러그인 기본 문구가 영문이라 대체)                          |
+| `quartz/styles/custom.scss`                   | 블로그 커스텀 스타일 (Quartz 기본 스타일 파일은 건드리지 않음)                                            |
+| `DESIGN_SPEC.md` · `PROGRESS.md`              | 디자인 규칙 · 진행 현황과 백로그                                                                          |
 
 ### 범주 추가하기
 

@@ -65,28 +65,28 @@ Quartz는 아래 토큰을 CSS 변수(`var(--light)` 등)로 노출한다. 새 �
 | beforeBody      | 브레드크럼(현재 항목 숨김) → 글 제목 → 날짜·읽기시간 → 요약·태그 (§7.5) | 같음                                                 |
 | 본문            | `article`                                                               | 같음                                                 |
 | 오른쪽 사이드바 | 그래프 뷰 → 목차(TOC) → 백링크                                          | 본문 아래로 내려감                                   |
-| footer          | "Created with Quartz" + GitHub 링크                                     | 같음                                                 |
+| footer          | "© 2026 P-digit · Quartz로 만들었습니다" + GitHub 링크 (`site-footer`)  | 같음                                                 |
 
 페이지 유형별 차이(`layout.byPageType`): 폴더·태그 페이지는 오른쪽 사이드바 없음, 리더 모드 버튼 제외.
 
 ## 5. 주요 컴포넌트
 
-| 컴포넌트                 | 플러그인                                     | 위치                                         | 비고                                      |
-| ------------------------ | -------------------------------------------- | -------------------------------------------- | ----------------------------------------- |
-| 사이트 제목              | page-title                                   | left                                         |                                           |
-| 검색                     | search                                       | left/toolbar                                 | 전체 텍스트 검색 + 미리보기               |
-| 다크모드 / 리더모드      | darkmode / reader-mode                       | left/toolbar                                 |                                           |
-| 탐색기                   | explorer                                     | left                                         | 폴더 `notes`                              |
-| 브레드크럼               | breadcrumbs                                  | beforeBody                                   | 홈 제외                                   |
-| 글 제목·메타             | article-title / content-meta                 | beforeBody                                   | 날짜 + 읽기 시간                          |
-| 노트 속성                | note-properties                              | beforeBody                                   | description·tags 표시 (aliases는 숨김)    |
-| 그래프 / 목차 / 백링크   | graph / table-of-contents / backlinks        | right                                        |                                           |
-| 글 목록                  | folder-page / tag-page                       | 본문                                         | 제목 → 날짜 → 태그 칩 세로 스택 (PR 2)    |
-| 최근 글                  | recent-notes                                 | afterBody (`condition: is-index`, 첫 화면만) | 전 범주 5개, 제목 · 날짜 · 태그 칩        |
-| 홈 hero / 카드 / 태그 칩 | `content/index.md` 마크업 + `custom.scss`    | 첫 화면 본문                                 | `.home-hero`, `.home-cards`, `.home-tags` |
-| 콜아웃                   | obsidian-flavored-markdown                   | 본문                                         | 노션 토글 → 접히는 콜아웃                 |
-| 코드 복사 · 언어 라벨    | ./plugins/post-extras (transformer 스크립트) | 본문 코드 블록 `figure` 오른쪽 위            | `.code-actions` (§7.7)                    |
-| 이전/다음 글             | ./plugins/post-extras (`PostNav`)            | afterBody (priority 1)                       | 같은 범주 안 날짜순 (§7.7)                |
+| 컴포넌트                 | 플러그인                                                | 위치                                         | 비고                                      |
+| ------------------------ | ------------------------------------------------------- | -------------------------------------------- | ----------------------------------------- |
+| 사이트 제목              | page-title                                              | left                                         |                                           |
+| 검색                     | search                                                  | left/toolbar                                 | 전체 텍스트 검색 + 미리보기               |
+| 다크모드 / 리더모드      | darkmode / reader-mode                                  | left/toolbar                                 |                                           |
+| 탐색기                   | explorer                                                | left                                         | 폴더 `notes`                              |
+| 브레드크럼               | breadcrumbs (`rootName: 홈`)                            | beforeBody                                   | 홈 제외, 현재 항목 숨김                   |
+| 글 제목·메타             | article-title / ./plugins/post-meta (content-meta 대체) | beforeBody                                   | 날짜 + "약 N분"                           |
+| 노트 속성                | note-properties                                         | beforeBody                                   | description·tags 표시 (aliases는 숨김)    |
+| 그래프 / 목차 / 백링크   | graph / table-of-contents / backlinks                   | right                                        |                                           |
+| 글 목록                  | folder-page / tag-page                                  | 본문                                         | 제목 → 날짜 → 태그 칩 세로 스택 (PR 2)    |
+| 최근 글                  | recent-notes                                            | afterBody (`condition: is-index`, 첫 화면만) | 전 범주 5개, 제목 · 날짜 · 태그 칩        |
+| 홈 hero / 카드 / 태그 칩 | `content/index.md` 마크업 + `custom.scss`               | 첫 화면 본문                                 | `.home-hero`, `.home-cards`, `.home-tags` |
+| 콜아웃                   | obsidian-flavored-markdown                              | 본문                                         | 노션 토글 → 접히는 콜아웃                 |
+| 코드 복사 · 언어 라벨    | ./plugins/post-extras (transformer 스크립트)            | 본문 코드 블록 `figure` 오른쪽 위            | `.code-actions` (§7.7)                    |
+| 이전/다음 글             | ./plugins/post-extras (`PostNav`)                       | afterBody (priority 1)                       | 같은 범주 안 날짜순 (§7.7)                |
 
 ## 6. 커스터마이징 규칙
 
@@ -162,3 +162,17 @@ Quartz는 아래 토큰을 CSS 변수(`var(--light)` 등)로 노출한다. 새 �
 - **코드 액션 바** `.code-actions`: 스크립트가 `nav`·`render` 때마다 `article figure[data-rehype-pretty-code-figure]`에 한 번만 붙인다. `figure` 기준 absolute(오른쪽 위)라서 `pre`를 가로로 스크롤해도 고정된다. 언어 라벨 `.code-lang`(plaintext·txt·text 제외, 있으면 `figure.has-code-lang`) + 버튼 `.code-copy`("복사" → "복사됨"/"실패" 1.6초, `aria-label="코드 복사"`). 라벨 있는 블록은 code 위 padding 1.9rem.
 - 복사 텍스트는 `[data-line]` 줄들의 텍스트를 줄바꿈으로 합친다(줄 번호 제외). clipboard API가 없으면 `textarea` + `execCommand` 폴백.
 - **이전/다음 글** `.post-nav`: 같은 폴더(범주) 글만, `index`·태그 제외, `frontmatter.date` 오름차순(같으면 슬러그 숫자 인식 비교). 카드 2열(이전 왼쪽 · 다음 오른쪽 정렬, 이전이 없으면 빈 칸으로 다음을 오른쪽에 유지), 모바일 1열. 카드 테두리·hover는 §7.1 카드 규칙.
+
+### 7.8 한국어 UI 문자열 (PR 9)
+
+커뮤니티 플러그인의 ko-KR 번역이 영문으로 남아 있는 것은 node_modules를 고치지 않고 로컬 플러그인·옵션으로 바꾼다.
+
+| 영문                                                               | 한국어                                   | 방법                                                                                                                |
+| ------------------------------------------------------------------ | ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| `21 min read`                                                      | `약 12분`                                | content-meta 끄고 `plugins/post-meta`(같은 `p.content-meta` 마크업). 한글 분당 500자 + 영문 단어 분당 200단어       |
+| `Created with Quartz v5.2.2 © 2026`                                | `© 2026 P-digit · Quartz로 만들었습니다` | footer 끄고 `plugins/site-footer`. `footer.site-footer`: 위 1px lightgray 선, 보조 텍스트색 0.85rem, 링크 가로 나열 |
+| `Home` (브레드크럼)                                                | `홈`                                     | breadcrumbs `rootName` 옵션                                                                                         |
+| 검색 아이콘 툴팁 `Search`, aria-label `Global Graph`·`breadcrumbs` | `검색`, `전체 그래프`·`현재 위치`        | `plugins/post-extras` inline 스크립트(nav·render 때 교체)                                                           |
+
+- 복사 버튼 `.code-copy`: `min-width: 4.8em` 가운데 정렬(문구가 바뀌어도 폭 고정), 실패 상태는 점선 테두리 + `--dark`(빨강 토큰 없음).
+- 아직 남은 영문: 태그 슬러그 표시(`#isaac-sim`) — Quartz가 frontmatter 단계에서 태그를 소문자 슬러그로 바꿔 원래 표기가 빌드 데이터에 없다(PROGRESS 이슈 11).

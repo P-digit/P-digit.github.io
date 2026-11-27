@@ -78,6 +78,20 @@ plugins:
     layout:
       position: right
       priority: 30
+  - source: "./plugins/post-meta"
+    enabled: true
+    layout:
+      position: beforeBody
+      priority: 20
+  - source: "./plugins/site-footer"
+    enabled: true
+    options:
+      author: P-digit
+      links:
+        GitHub: https://github.com/P-digit
+    layout:
+      position: footer
+      priority: 50
   - source: "./plugins/post-extras"
     enabled: true
     order: 50
@@ -162,8 +176,9 @@ plugins:
     layout:
       position: beforeBody
       priority: 10
+  # ko-KR 번역이 "N min read" 영문이라 끄고 ./plugins/post-meta 로 대체
   - source: "@quartz-community/content-meta"
-    enabled: true
+    enabled: false
     layout:
       position: beforeBody
       priority: 20
@@ -191,6 +206,8 @@ plugins:
       group: toolbar
   - source: "@quartz-community/breadcrumbs"
     enabled: true
+    options:
+      rootName: 홈
     layout:
       position: beforeBody
       priority: 5
@@ -203,8 +220,9 @@ plugins:
     layout:
       position: afterBody
       priority: 10
+  # ko-KR 번역이 "Created with" 영문이라 끄고 ./plugins/site-footer 로 대체
   - source: "@quartz-community/footer"
-    enabled: true
+    enabled: false
     options:
       links:
         GitHub: https://github.com/P-digit

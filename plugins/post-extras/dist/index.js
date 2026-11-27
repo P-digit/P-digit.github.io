@@ -1,5 +1,5 @@
 // P-digit 블로그 전용 로컬 플러그인 (빌드 단계 없는 플레인 ESM)
-// - transformer: 코드 블록 복사 버튼 스크립트를 모든 페이지에 넣는다
+// - transformer: 코드 블록 복사 버튼 스크립트 + 영문 UI 라벨 한국어화 스크립트를 모든 페이지에 넣는다
 // - component: PostNav (dist/components/index.js)
 // 스타일은 quartz/styles/custom.scss 에 있다 (.code-actions, .post-nav)
 
@@ -91,6 +91,22 @@ const copyScript = `
 })()
 `
 
+// 플러그인 컴포넌트에 박혀 있는 영문 접근성 라벨·툴팁을 한국어로 (ko-KR 번역이 비어 있는 것들)
+const uiLabelScript = `
+(() => {
+  const fixes = [
+    [".search-button svg > title", (el) => (el.textContent = "검색")],
+    [".global-graph-icon", (el) => el.setAttribute("aria-label", "전체 그래프")],
+    [".breadcrumb-container", (el) => el.setAttribute("aria-label", "현재 위치")],
+  ]
+  function apply() {
+    for (const [sel, fix] of fixes) document.querySelectorAll(sel).forEach(fix)
+  }
+  document.addEventListener("nav", apply)
+  document.addEventListener("render", apply)
+})()
+`
+
 export const plugin = () => ({
   name: "PostExtras",
   // 본문은 바꾸지 않는다. Quartz가 transformer로 인식하려면 이 메서드 중 하나가 있어야 한다.
@@ -99,7 +115,10 @@ export const plugin = () => ({
   },
   externalResources() {
     return {
-      js: [{ loadTime: "afterDOMReady", contentType: "inline", script: copyScript }],
+      js: [
+        { loadTime: "afterDOMReady", contentType: "inline", script: copyScript },
+        { loadTime: "afterDOMReady", contentType: "inline", script: uiLabelScript },
+      ],
     }
   },
 })
