@@ -140,3 +140,17 @@ Quartz는 아래 토큰을 CSS 변수(`var(--light)` 등)로 노출한다. 새 �
 - 메타 줄: 보조 텍스트 색, 0.88rem, 구분자는 가운뎃점(`·`).
 - note-properties: 접기 헤더·키 열·테두리를 숨기고 요약은 리드 문단(`--dark`, 1.02rem, 행간 1.7, 왼쪽 선 없음 — 본문 첫 인용문과 구분), 태그는 공통 칩(§7.1). 저장된 접힘 상태 대비 `::details-content { content-visibility: visible }`.
 - 속성이 있는 글은 글 머리 아래 `1px solid var(--lightgray)` 구분선 + padding-bottom 1.25rem.
+
+### 7.6 본문 가독성 (PR 7)
+
+모두 `article` 범위. base.scss는 그대로 두고 custom.scss에서 덮어쓴다.
+
+| 요소         | 규칙                                                                                                                                                                                                                                                                                                                  |
+| ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 본문 첫 요소 | 글 머리 구분선 아래 margin-top 1.25rem                                                                                                                                                                                                                                                                                |
+| 소제목       | h2 위 2.5rem(모바일 2rem)·아래 .75rem, h3 위 1.75rem·아래 .5rem                                                                                                                                                                                                                                                       |
+| 인용문       | 테두리 `color-mix(--secondary 55%)`, 글자 `--darkgray`                                                                                                                                                                                                                                                                |
+| 표           | `.table-container`에 1px lightgray 테두리·radius 8px(들여쓰기 없음), table 100%, 0.92rem(모바일 .86rem), 셀 padding .55rem .8rem·위 정렬·행간 1.55, th 배경 `color-mix(--lightgray 45%)`·semibold·nowrap, 행 hover. 모바일 td `overflow-wrap: anywhere`(긴 경로 때문). 그래도 넘치는 표는 컨테이너 안에서 가로 스크롤 |
+| 코드 블록    | 배경 `color-mix(--lightgray 30%, --light)`, radius 8px, .84rem(모바일 .8rem)·행간 1.65, 오른쪽 위 언어 라벨(`pre[data-language]::before`, plaintext·txt 제외, 라벨 있으면 위 padding 1.5rem)                                                                                                                          |
+| 인라인 코드  | 배경 `color-mix(--lightgray 60%)`, padding .08rem .35rem                                                                                                                                                                                                                                                              |
+| 콜아웃       | radius 8px (카드와 통일)                                                                                                                                                                                                                                                                                              |

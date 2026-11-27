@@ -213,6 +213,148 @@ code {
 }
 
 /* ==========================================================================
+   본문 가독성 (PR 7) — article 안의 제목 간격 · 표 · 코드 블록 · 인용문 · 콜아웃
+   ========================================================================== */
+
+article {
+  // 글 머리 구분선 바로 아래 첫 요소가 선에 붙지 않게
+  & > .markdown-preview-view > :first-child,
+  & > .markdown-preview-view > :first-child > :first-child {
+    margin-top: 1.25rem;
+  }
+
+  // 소제목: 섹션 구분이 보이도록 위 여백을 넉넉히
+  h2 {
+    margin-top: 2.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  h3 {
+    margin-top: 1.75rem;
+    margin-bottom: 0.5rem;
+  }
+
+  // 인용문(노션 인용 · "N일차 · 강의명" 머리줄): 본문보다 한 단계 옅게
+  blockquote {
+    margin: 1.25rem 0;
+    padding: 0.1rem 0 0.1rem 1rem;
+    border-left-color: color-mix(in srgb, var(--secondary) 55%, var(--light));
+    color: var(--darkgray);
+
+    p {
+      margin: 0.35rem 0;
+    }
+  }
+
+  // 표: 들여쓰기 없이 본문 폭에 맞추고, 여러 줄 셀도 촘촘하게
+  .table-container {
+    margin: 1.25rem 0;
+    border: 1px solid var(--lightgray);
+    border-radius: 8px;
+
+    & > table {
+      width: 100%;
+      margin: 0;
+      padding: 0;
+      font-size: 0.92rem;
+
+      & > * {
+        line-height: 1.55;
+      }
+
+      th,
+      td {
+        padding: 0.55rem 0.8rem;
+        vertical-align: top;
+      }
+    }
+
+    th {
+      border-bottom: 1px solid var(--lightgray);
+      background-color: color-mix(in srgb, var(--lightgray) 45%, var(--light));
+      color: var(--dark);
+      font-weight: $semiBoldWeight;
+      white-space: nowrap;
+    }
+
+    tbody tr:hover {
+      background-color: color-mix(in srgb, var(--highlight) 60%, transparent);
+    }
+  }
+
+  // 코드 블록: 옅은 배경 + 둥근 모서리 + 오른쪽 위 언어 라벨
+  figure[data-rehype-pretty-code-figure] {
+    margin: 1.25rem 0;
+  }
+
+  pre {
+    border-radius: 8px;
+    background-color: color-mix(in srgb, var(--lightgray) 30%, var(--light));
+
+    & > code {
+      padding: 0.85rem 0;
+      font-size: 0.84rem;
+      line-height: 1.65;
+    }
+
+    // 라벨이 긴 첫 줄과 겹치지 않게 위쪽 여백 확보
+    &[data-language]:not([data-language="plaintext"], [data-language="txt"]) > code {
+      padding-top: 1.5rem;
+    }
+
+    &[data-language]:not([data-language="plaintext"], [data-language="txt"])::before {
+      content: attr(data-language);
+      position: absolute;
+      top: 0.35rem;
+      right: 0.6rem;
+      color: color-mix(in srgb, var(--darkgray) 70%, var(--light));
+      font-family: var(--codeFont);
+      font-size: 0.7rem;
+      letter-spacing: 0.02em;
+      text-transform: lowercase;
+      pointer-events: none;
+    }
+  }
+
+  // 인라인 코드: 회색 덩어리 대신 옅은 배경
+  :not(pre) > code {
+    padding: 0.08rem 0.35rem;
+    background-color: color-mix(in srgb, var(--lightgray) 60%, var(--light));
+  }
+
+  // 콜아웃(노션 토글 · 복습 질문): 모서리를 다른 카드와 맞춤
+  .callout {
+    border-radius: 8px;
+  }
+}
+
+@media all and ($mobile) {
+  article {
+    h2 {
+      margin-top: 2rem;
+    }
+
+    .table-container > table {
+      font-size: 0.86rem;
+
+      th,
+      td {
+        padding: 0.45rem 0.6rem;
+      }
+
+      // 긴 경로·식별자(/World/SimpleRobot/…)가 칸 최소 폭을 키워 표가 넘치지 않게
+      td {
+        overflow-wrap: anywhere;
+      }
+    }
+
+    pre > code {
+      font-size: 0.8rem;
+    }
+  }
+}
+
+/* ==========================================================================
    첫 화면(Home) 랜딩 — content/index.md 의 .home-* 마크업 + recent-notes
    토큰만 사용한다 (DESIGN_SPEC.md §2). 다크 모드는 변수로 자동 대응.
    ========================================================================== */
