@@ -127,7 +127,7 @@
 
 ### 7.2 첫 화면 — 범주 허브 (PR 1 → PR 5에서 개편)
 
-- 페이지 제목 "P-digit 개발 기록". 순서: 글 제목(h1) → hero(뱃지 "개인 개발 블로그" + lead + sub) → "범주" 소제목(`h2.home-section-title`, 1.12rem) → 범주 카드 5개(`nav.home-cards`, `aria-label="범주"`) → (본문 끝 구분선) → 태그 칩(`plugins/home-tags`, afterBody) → 최근 글
+- 페이지 제목 "P-digit 개발 기록". 순서: 글 제목(h1, PR 15부터 화면에서만 숨김) → hero(뱃지 "개인 개발 블로그" + lead + sub) → "범주" 소제목(`h2.home-section-title`, 1.12rem) → 범주 카드 5개(`nav.home-cards`, `aria-label="범주"`) → (본문 끝 구분선) → 태그 칩(`plugins/home-tags`, afterBody) → 최근 글
 - 범주 카드 그리드: 2열. **연재 중인 범주는 `.home-card--featured`**(`grid-column: 1 / -1`, 배경 `color-mix(--secondary 4%)`, "연재 중" 뱃지 `.home-card__badge`, 아이콘 2rem)로 한 줄 전체, 나머지 4개는 2×2. 모바일(≤800px)은 1열. `auto-fit`은 본문 750px에서 3+2로 떨어져 쓰지 않는다.
 - 연재 중인 범주가 바뀌면 `--featured` 클래스와 뱃지를 옮긴다. 범주 카드 설명은 짧은 키워드(`·` 구분), featured만 한 문장.
 - 첫 화면에서는 `.content-meta`(수정일·읽기 시간)를 숨긴다 (`body[data-slug="index"]`).
@@ -216,3 +216,11 @@
 - **`@mixin lift-card`** (링크 카드 공통): 1px lightgray, radius `--radius-card`(10px), `--shadow-sm`. hover·focus: `translateY(-2px)` + 테두리 `color-mix(--secondary 45%, --lightgray)` + `--shadow-md`. `prefers-reduced-motion`이면 움직이지 않음. 적용: 첫 화면 범주 카드, 이전/다음 글 카드(hover 때 제목 `--secondary`).
 - **목록 행 `note-row`**: 제목 1.02rem semibold `--dark`, 행 hover·focus-within 때 배경 `color-mix(--lightgray 35%)`(칩의 파란 배경과 겹치지 않는 중립색) + 제목 `--secondary`, 날짜 `tabular-nums`.
 - 모바일 ☰(탐색기) 버튼: 2.1rem 정사각, radius 8px, hover `--highlight` — 오른쪽 툴바와 대칭.
+
+### 7.12 첫 화면 hero · 범주 카드 비주얼 (PR 15)
+
+- **h1 숨김**: 첫 화면 h1은 사이드바·모바일 헤더의 사이트 제목과 같아서 visually-hidden(1px, `clip-path: inset(50%)`). 화면 읽기 프로그램·검색엔진에는 남는다. hero 문장이 시각적 제목.
+- **hero**: 1px `color-mix(--secondary 16%, --lightgray)` 테두리, radius 14px, `--shadow-sm`. 배경 = 왼쪽 위 radial `color-mix(--secondary 9%)` + 오른쪽 아래 radial `color-mix(--tertiary 8%)` + `--light`. `::before` 점 격자(1px 점, 14px 간격, `color-mix(--secondary 22%)`)를 `mask-image`로 오른쪽 위에서만 보이게(`isolation: isolate`, `z-index: -1`).
+- **hero 글자**: 배지 = `--radius-chip` + 1px 테두리 + 틸 상태 점(0.42rem, 3px 링). lead 1.5rem 700 자간 -0.025em, 최대 30em(모바일 1.22rem). sub 행간 1.7, 최대 36em.
+- **범주 카드 아이콘**: 이모지를 2.5rem 사각 칸(radius 8px, `color-mix(--lightgray 45%)`)에 담는다. 카드 hover 때 칸 `--highlight`. 연재 중 카드는 3rem 칸 `color-mix(--secondary 10%)`.
+- **목록 행 hover**(이슈 24): hover 행과 바로 위 행의 구분선을 숨기고 hover 때만 radius `--radius-surface` → 선에 닿지 않는 둥근 면. 평소 구분선은 직선.
