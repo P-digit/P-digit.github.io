@@ -224,3 +224,9 @@
 - **hero 글자**: 배지 = `--radius-chip` + 1px 테두리 + 틸 상태 점(0.42rem, 3px 링). lead 1.5rem 700 자간 -0.025em, 최대 30em(모바일 1.22rem). sub 행간 1.7, 최대 36em.
 - **범주 카드 아이콘**: 이모지를 2.5rem 사각 칸(radius 8px, `color-mix(--lightgray 45%)`)에 담는다. 카드 hover 때 칸 `--highlight`. 연재 중 카드는 3rem 칸 `color-mix(--secondary 10%)`.
 - **목록 행 hover**(이슈 24): hover 행과 바로 위 행의 구분선을 숨기고 hover 때만 radius `--radius-surface` → 선에 닿지 않는 둥근 면. 평소 구분선은 직선.
+
+### 7.13 본문 면 · 다크 모드 마감 (PR 16)
+
+- **콜아웃 색**: 정보성(note·abstract·info·todo·question·quote)은 `--color: var(--secondary)`, 테두리 `color-mix(--secondary 24%)`, 배경 `color-mix(--secondary 5%)`. 팁·성공은 `--tertiary`(28%·6%). 경고·위험·실패·버그·예시는 의미 색이라 `callouts.scss` 기본값. 제목 semibold, 접히는 콜아웃 제목은 pointer + hover opacity .85.
+- **코드**: `tab-size: 4`, `font-variant-ligatures: none`(합자 없이 기호 그대로). `.code-actions`는 반투명 배경 `color-mix(--light 82%)` + `backdrop-filter: blur(4px)` + radius 7px.
+- **반경**: 표 컨테이너·코드 블록·콜아웃·본문 이미지 모두 `--radius-surface`(하드코딩 8px 없음). `hr`은 `--lightgray`.

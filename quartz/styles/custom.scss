@@ -377,7 +377,7 @@ article {
   .table-container {
     margin: 1.25rem 0;
     border: 1px solid var(--lightgray);
-    border-radius: 8px;
+    border-radius: var(--radius-surface);
 
     & > table {
       width: 100%;
@@ -415,13 +415,16 @@ article {
   }
 
   pre {
-    border-radius: 8px;
+    border-radius: var(--radius-surface);
     background-color: color-mix(in srgb, var(--lightgray) 30%, var(--light));
 
     & > code {
       padding: 0.85rem 0;
       font-size: 0.84rem;
       line-height: 1.65;
+      // 들여쓰기는 4칸, JetBrains Mono 합자(=> != 등)는 끈다 — 기호를 있는 그대로 (PR 16)
+      tab-size: 4;
+      font-variant-ligatures: none;
     }
   }
 
@@ -440,6 +443,12 @@ article {
     align-items: center;
     gap: 0.4rem;
     z-index: 1;
+    // 긴 첫 줄 위에 떠도 글자가 겹쳐 보이지 않게 반투명 배경 + 흐림 (PR 16)
+    padding: 0.15rem 0.2rem 0.15rem 0.5rem;
+    border-radius: 7px;
+    background-color: color-mix(in srgb, var(--light) 82%, transparent);
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
   }
 
   .code-lang {
@@ -493,9 +502,53 @@ article {
     background-color: color-mix(in srgb, var(--lightgray) 60%, var(--light));
   }
 
+  // 콜아웃(노션 토글 · 복습 질문) 색을 팔레트 토큰으로 (PR 16).
+  // 정보성(note·abstract·info·todo·question·quote)은 포인트 파랑, 팁·성공은 틸.
+  // 경고·위험·예시는 의미를 전하는 색이라 callouts.scss 기본값 그대로 둔다.
+  .callout:is(
+    [data-callout="note"],
+    [data-callout="abstract"],
+    [data-callout="info"],
+    [data-callout="todo"],
+    [data-callout="question"]
+  ) {
+    --color: var(--secondary);
+    --border: color-mix(in srgb, var(--secondary) 24%, transparent);
+    --bg: color-mix(in srgb, var(--secondary) 5%, transparent);
+  }
+
+  .callout:is([data-callout="tip"], [data-callout="success"]) {
+    --color: var(--tertiary);
+    --border: color-mix(in srgb, var(--tertiary) 28%, transparent);
+    --bg: color-mix(in srgb, var(--tertiary) 6%, transparent);
+  }
+
+  .callout .callout-title {
+    font-weight: $semiBoldWeight;
+  }
+
+  // 접히는 콜아웃: 제목 줄에 hover 반응
+  .callout.is-collapsible > .callout-title {
+    cursor: pointer;
+    transition: opacity 0.15s ease;
+
+    &:hover {
+      opacity: 0.85;
+    }
+  }
+
+  // 이미지·구분선
+  img {
+    border-radius: var(--radius-surface);
+  }
+
+  hr {
+    background-color: var(--lightgray);
+  }
+
   // 콜아웃(노션 토글 · 복습 질문): 모서리를 다른 카드와 맞춤
   .callout {
-    border-radius: 8px;
+    border-radius: var(--radius-surface);
   }
 }
 
