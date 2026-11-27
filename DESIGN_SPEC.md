@@ -66,7 +66,7 @@ Quartz는 아래 토큰을 CSS 변수(`var(--light)` 등)로 노출한다. 새 �
 | 글 제목·메타             | article-title / content-meta              | beforeBody                                   | 날짜 + 읽기 시간                          |
 | 노트 속성                | note-properties                           | beforeBody                                   | description·tags·aliases 표시             |
 | 그래프 / 목차 / 백링크   | graph / table-of-contents / backlinks     | right                                        |                                           |
-| 글 목록                  | folder-page / tag-page                    | 본문                                         | 날짜 · 제목 · 태그 3열                    |
+| 글 목록                  | folder-page / tag-page                    | 본문                                         | 제목 → 날짜 → 태그 칩 세로 스택 (PR 2)    |
 | 최근 학습 노트           | recent-notes                              | afterBody (`condition: is-index`, 첫 화면만) | 5개, 제목 · 날짜 · 태그 칩                |
 | 홈 hero / 카드 / 태그 칩 | `content/index.md` 마크업 + `custom.scss` | 첫 화면 본문                                 | `.home-hero`, `.home-cards`, `.home-tags` |
 | 콜아웃                   | obsidian-flavored-markdown                | 본문                                         | 노션 토글 → 접히는 콜아웃                 |
@@ -91,7 +91,7 @@ Quartz는 아래 토큰을 CSS 변수(`var(--light)` 등)로 노출한다. 새 �
 | 칩(태그·뱃지)          | radius 999px, 배경 `var(--highlight)`, 글자 `var(--secondary)`, `#` 접두는 opacity .6, hover 시 테두리 secondary. 보조 칩은 투명 배경 + lightgray 테두리           |
 | 보조 텍스트(날짜·라벨) | `--gray`는 라이트 모드 대비가 낮아 텍스트에 쓰지 않는다 → `color-mix(in srgb, var(--darkgray) 75%, var(--light))`                                                  |
 | 링크형 블록            | `text-decoration: none` 명시, 진입 화살표 `→`(기본 `--gray`, hover `--secondary` + `translateX(3px)`)                                                              |
-| 리스트 행              | 위아래 `1px solid var(--lightgray)` 구분선, 행 padding 0.85rem 0                                                                                                   |
+| 리스트 행              | `@mixin note-row` / `note-tags` (custom.scss). 위아래 `1px solid var(--lightgray)` 구분선, 행 padding 0.85rem 0, 제목→날짜(nowrap)→태그 칩                         |
 
 ### 7.2 첫 화면 (PR 1)
 
@@ -99,3 +99,12 @@ Quartz는 아래 토큰을 CSS 변수(`var(--light)` 등)로 노출한다. 새 �
 - 첫 화면에서는 `.content-meta`(수정일·읽기 시간)를 숨긴다 (`body[data-slug="index"]`).
 - 카드 그리드: desktop 3열, tablet·mobile 1열. 마크업 링크는 Quartz 실제 슬러그(소문자, 상대경로 `./tags/ros-2`)와 `class="internal"`을 쓴다.
 - 레이아웃 조건 `is-index`는 `quartz.ts`에서 `registerCondition`으로 등록한다.
+
+### 7.3 글 목록 (PR 2)
+
+- 대상: `.page-listing` — `/notes/` 폴더 페이지, `/tags/<태그>`, `/tags/` 색인. 첫 화면 `.recent-li`와 같은 `note-row` mixin을 쓴다.
+- `.section-li > .section`은 grid 대신 **flex column + `order`**로 제목(1) → 날짜(2) → 태그(3) 순서를 만든다. 팝오버의 `grid-template-columns !important`와 충돌하지 않기 위해서다.
+- 날짜는 `white-space: nowrap`, 제목은 `word-break: keep-all` + `overflow-wrap: anywhere`.
+- 모바일(≤600px)에서도 태그 칩을 표시한다(플러그인 기본값은 숨김).
+- 행 hover / `:focus-within`: 배경 `var(--highlight)`, 좌우 padding 0.75rem.
+- "N건의 항목" 카운트는 보조 텍스트 색 0.85rem. `/tags/` 색인은 태그 그룹 사이 2rem.
