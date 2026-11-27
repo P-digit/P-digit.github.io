@@ -101,6 +101,8 @@ plugins:
       # 본문 글꼴 Pretendard Variable (필요한 글자만 나눠 받는 dynamic subset)
       stylesheets:
         - https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css
+      # 범주·태그 목록에서 처음 보여 줄 글 수 (넘으면 "더 보기")
+      listPageSize: 10
     order: 50
     layout:
       position: afterBody

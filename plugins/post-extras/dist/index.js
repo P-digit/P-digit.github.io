@@ -3,7 +3,7 @@ import path from "node:path"
 
 // P-digit 블로그 전용 로컬 플러그인 (빌드 단계 없는 플레인 ESM)
 // - transformer: 첫 화면 범주 카드 글 수(renderTransforms) +
-//   코드 블록 복사 버튼 · 영문 UI 라벨 한국어화 · 태그 표시 이름 · 모션 스크립트와
+//   코드 블록 복사 버튼 · 영문 UI 라벨 한국어화 · 태그 표시 이름 · 모션 · 목록 더 보기 스크립트와
 //   외부 스타일시트(웹 글꼴, stylesheets 옵션)를 모든 페이지에 넣는다
 // - component: PostNav (dist/components/index.js)
 // 스타일은 quartz/styles/custom.scss 에 있다 (.code-actions, .post-nav)
@@ -25,10 +25,29 @@ const copyScript = `
     done: svg('<path d="M20 6 9 17l-5-5"/>'),
     fail: svg('<path d="M18 6 6 18"/><path d="m6 6 12 12"/>'),
   }
+  // 화면 읽기 프로그램에도 상태를 알린다 (이슈 30): aria-label 갱신 + 화면 밖 알림 영역
+  const ARIA = { idle: "코드 복사", done: "코드를 복사했습니다", fail: "코드를 복사하지 못했습니다" }
+  function announce(text) {
+    let live = document.getElementById("sr-status")
+    if (!live) {
+      live = document.createElement("div")
+      live.id = "sr-status"
+      live.className = "sr-only"
+      live.setAttribute("role", "status")
+      live.setAttribute("aria-live", "polite")
+      document.body.appendChild(live)
+    }
+    live.textContent = ""
+    requestAnimationFrame(() => (live.textContent = text))
+  }
   const setState = (btn, state, label) => {
     btn.innerHTML = ICON[state] + '<span class="code-copy__label">' + label + "</span>"
+    btn.setAttribute("aria-label", ARIA[state])
     if (state === "idle") delete btn.dataset.state
-    else btn.dataset.state = state
+    else {
+      btn.dataset.state = state
+      announce(ARIA[state])
+    }
   }
   const SKIP_LANGS = new Set(["plaintext", "txt", "text"])
 
@@ -309,6 +328,48 @@ function addCategoryCounts(root, slug, data) {
   })
 }
 
+// ───────── 목록 "더 보기" (PR 21) ─────────
+// 범주·태그 목록(.page-listing ul.section-ul)이 pageSize 보다 길면 처음 pageSize 개만 보이고
+// "더 보기 (N개 남음)" 버튼으로 pageSize 개씩 더 보인다. 새로 보인 첫 글로 초점을 옮긴다.
+// URL 이 바뀌지 않아 SPA·검색·이전/다음 글과 충돌하지 않는다.
+const listScript = (pageSize) => `
+(() => {
+  const SIZE = ${pageSize}
+  let seq = 0
+  function setup() {
+    for (const ul of document.querySelectorAll(".page-listing ul.section-ul")) {
+      if (ul.dataset.paged) continue
+      const items = Array.from(ul.children).filter((li) => li.matches("li.section-li"))
+      if (items.length <= SIZE) continue
+      ul.dataset.paged = "1"
+      if (!ul.id) ul.id = "listing-" + ++seq
+      items.forEach((li, i) => (li.hidden = i >= SIZE))
+      const btn = document.createElement("button")
+      btn.type = "button"
+      btn.className = "list-more"
+      btn.setAttribute("aria-controls", ul.id)
+      const update = () => {
+        const rest = items.filter((li) => li.hidden).length
+        if (rest === 0) return btn.remove()
+        btn.textContent = "더 보기 (" + rest + "개 남음)"
+      }
+      const onClick = () => {
+        const next = items.filter((li) => li.hidden).slice(0, SIZE)
+        next.forEach((li) => (li.hidden = false))
+        next[0]?.querySelector("h3 a, a")?.focus({ preventScroll: true })
+        update()
+      }
+      btn.addEventListener("click", onClick)
+      window.addCleanup?.(() => btn.removeEventListener("click", onClick))
+      ul.after(btn)
+      update()
+    }
+  }
+  document.addEventListener("nav", setup)
+  document.addEventListener("render", setup)
+})()
+`
+
 export const plugin = (opts) => ({
   name: "PostExtras",
   // 본문은 바꾸지 않는다. Quartz가 transformer로 인식하려면 이 메서드 중 하나가 있어야 한다.
@@ -328,6 +389,11 @@ export const plugin = (opts) => ({
         { loadTime: "afterDOMReady", contentType: "inline", script: copyScript },
         { loadTime: "afterDOMReady", contentType: "inline", script: uiLabelScript },
         { loadTime: "afterDOMReady", contentType: "inline", script: motionScript },
+        {
+          loadTime: "afterDOMReady",
+          contentType: "inline",
+          script: listScript(Number(opts?.listPageSize) > 0 ? Number(opts.listPageSize) : 10),
+        },
         ...(Object.keys(labels).length
           ? [{ loadTime: "afterDOMReady", contentType: "inline", script: tagLabelScript(labels) }]
           : []),

@@ -1557,6 +1557,36 @@ body[data-slug$="/index"] .content-meta {
   }
 }
 
+// "더 보기" (PR 21, plugins/post-extras listScript)
+.page-listing li.section-li[hidden] {
+  display: none;
+}
+
+button.list-more {
+  display: block;
+  width: 100%;
+  margin: 0.75rem 0 0;
+  padding: 0.6rem 1rem;
+  border: 1px dashed color-mix(in srgb, var(--secondary) 35%, var(--lightgray));
+  border-radius: var(--radius-surface);
+  background-color: transparent;
+  color: var(--secondary);
+  font-family: var(--bodyFont);
+  font-size: 0.9rem;
+  font-weight: $semiBoldWeight;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease;
+
+  &:hover,
+  &:focus-visible {
+    border-style: solid;
+    border-color: color-mix(in srgb, var(--secondary) 55%, var(--lightgray));
+    background-color: var(--highlight);
+  }
+}
+
 // 태그 색인(/tags/)의 태그별 소제목
 body[data-slug="tags/index"] .page-listing {
   margin-bottom: 2rem;
